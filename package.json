@@ -1,0 +1,34 @@
+{
+    "name": "boni-monorepo",
+    "version": "1.0.0",
+    "description": "Boni monorepo containing backend, mobile, and database packages",
+    "private": true,
+    "workspaces": [
+        "packages/*"
+    ],
+    "scripts": {
+        "build": "npm run build --workspaces --if-present",
+        "build:database": "npm run build -w @boni/database",
+        "build:backend": "npm run build -w @boni/backend",
+        "build:mobile": "npm run build -w @boni/mobile --if-present",
+        "dev": "npm run dev --workspaces --if-present",
+        "start": "npm run start --workspaces --if-present",
+        "test": "npm run test --workspaces --if-present",
+        "lint": "npm run lint --workspaces --if-present",
+        "format": "npm run format --workspaces --if-present",
+        "db:generate": "npm run db:generate -w @boni/database",
+        "db:migrate": "npm run db:migrate -w @boni/database",
+        "db:push": "npm run db:push -w @boni/database",
+        "db:reset": "npm run db:reset -w @boni/database",
+        "db:up": "npm run db:up -w @boni/backend",
+        "db:down": "npm run db:down -w @boni/backend",
+        "db:seed": "npm run db:seed -w @boni/backend"
+    },
+    "devDependencies": {
+        "typescript": "^5.7.3"
+    },
+    "engines": {
+        "node": ">=18.0.0",
+        "npm": ">=8.0.0"
+    }
+}

@@ -1,0 +1,131 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  USER
+  WORKER
+  MANAGER
+  ADMIN
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String
+  password  String
+  role      Role     @default(USER)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relações específicas
+  worker Worker?
+
+  // Customer fields (for USER role)
+  phone        String?
+  birthday     DateTime?
+  appointments Appointment[] @relation("User")
+}
+
+model Worker {
+  userId            Int           @id
+  user              User          @relation(fields: [userId], references: [id])
+  businessId        Int
+  business          Business      @relation("worksAt", fields: [businessId], references: [id])
+  // Employee number, job title, etc.
+  employeeId        String // TODO: Seems like I can just use userId
+  hireDate          DateTime
+  managedBusinesses Business[]    @relation("manages")
+  appointments      Appointment[]
+}
+
+model Category {
+  id            Int        @id @default(autoincrement())
+  name          String     @unique
+  description   String
+  // image String
+  parentId      Int?
+  parent        Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  subcategories Category[] @relation("CategoryHierarchy")
+  businesses    Business[]
+  Service       Service[]
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+}
+
+model Business {
+  id          Int           @id @default(autoincrement())
+  name        String
+  address     Address?
+  workers     Worker[]      @relation("worksAt")
+  managerId   Int?
+  manager     Worker?       @relation("manages", fields: [managerId], references: [userId])
+  categories  Category[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  Appointment Appointment[]
+  Service     Service[]
+}
+
+model Address {
+  id           Int      @id @default(autoincrement())
+  streetNumber String
+  street       String
+  city         String
+  state        String
+  zipCode      String
+  country      String
+  latitude     Float
+  longitude    Float
+  businessId   Int      @unique
+  business     Business @relation(fields: [businessId], references: [id])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Service {
+  id           Int           @id @default(autoincrement())
+  name         String
+  description  String?
+  imageUrl     String?
+  // TODO: Should we connect the Service to the Business or should it be "global"
+  businessId   Int
+  business     Business      @relation(fields: [businessId], references: [id])
+  // TODO: Add workers?
+  categoryId   Int
+  category     Category      @relation(fields: [categoryId], references: [id])
+  appointments Appointment[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+// TODO: If the service details changes after the appointment, how do we handle that?
+model Appointment {
+  id         Int      @id @default(autoincrement())
+  date       DateTime
+  services   Service[]
+  userId     Int
+  user       User     @relation("User", fields: [userId], references: [id])
+  businessId Int
+  business   Business @relation(fields: [businessId], references: [id])
+  workerId   Int
+  worker     Worker   @relation(fields: [workerId], references: [userId])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([userId, date])
+  @@unique([workerId, date])
+}
