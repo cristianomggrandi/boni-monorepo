@@ -58,12 +58,77 @@ async function main() {
     })
 
     // Category
-    const category = await prisma.category.create({
-        data: {
+    const categoriesData = [
+        {
             name: "Cabelo",
             description: "Serviços de cabelo",
+            subcategories: [
+                { name: "Corte", description: "Cortes de cabelo" },
+                { name: "Coloração", description: "Tinturas e colorações" },
+                { name: "Tratamento", description: "Tratamentos capilares" },
+            ],
         },
-    })
+        {
+            name: "Unhas",
+            description: "Serviços de unhas",
+            subcategories: [
+                { name: "Manicure", description: "Cuidados das mãos" },
+                { name: "Pedicure", description: "Cuidados dos pés" },
+                { name: "Nail Art", description: "Decoração de unhas" },
+            ],
+        },
+        {
+            name: "Maquiagem",
+            description: "Serviços de maquiagem",
+            subcategories: [
+                { name: "Maquiagem Social", description: "Maquiagem para eventos" },
+                { name: "Maquiagem de Noiva", description: "Maquiagem para casamentos" },
+                { name: "Maquiagem Artística", description: "Maquiagem criativa" },
+            ],
+        },
+        {
+            name: "Estética Corporal",
+            description: "Tratamentos estéticos",
+            subcategories: [
+                { name: "Depilação", description: "Remoção de pelos" },
+                { name: "Hidratação", description: "Tratamentos hidratantes" },
+                { name: "Massagem Relaxante", description: "Massagens corporais" },
+            ],
+        },
+        {
+            name: "Massagem",
+            description: "Serviços de massagem",
+            subcategories: [
+                { name: "Massagem Terapêutica", description: "Massagens para dores" },
+                { name: "Massagem Relaxantee", description: "Massagens para relaxamento" },
+                { name: "Reflexologia", description: "Massagem nos pés" },
+            ],
+        },
+    ]
+
+    let category
+    for (const catData of categoriesData) {
+        // Criar categoria principal
+        const mainCategory = await prisma.category.create({
+            data: {
+                name: catData.name,
+                description: catData.description,
+            },
+        })
+
+        if (!category) category = mainCategory
+
+        // Criar subcategorias
+        for (const sub of catData.subcategories) {
+            await prisma.category.create({
+                data: {
+                    name: sub.name,
+                    description: sub.description,
+                    parentId: mainCategory.id,
+                },
+            })
+        }
+    }
 
     // Business (sem manager ainda)
     const business = await prisma.business.create({

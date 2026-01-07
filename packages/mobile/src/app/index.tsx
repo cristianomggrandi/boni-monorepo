@@ -5,7 +5,7 @@ import SearchBar from "../components/search-bar"
 
 export default function Index() {
     return (
-        <SafeAreaView className="flex-1 bg-pink-50 px-6">
+        <SafeAreaView edges={["top"]} className="flex-1 bg-pink-50 px-6">
             <SearchBar />
             <NextAppointment />
 

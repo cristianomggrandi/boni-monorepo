@@ -8,6 +8,13 @@ module.exports = {
                 primary: "#FFC3CC",
                 secondary: "#D2DB76",
             },
+            fontFamily: {
+                sans: ["PlusJakarta"],
+                jakarta: ["PlusJakarta"],
+                bold: ["PlusJakarta-Bold"],
+                semibold: ["Jakarta-SemiBold"],
+                noto: ["NotoSans"],
+            },
         },
     },
     plugins: [],

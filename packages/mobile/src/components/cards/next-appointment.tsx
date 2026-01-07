@@ -36,7 +36,7 @@ export default function NextAppointment() {
     }> | null>(null)
 
     useEffect(() => {
-        api.get("appointments/next/11")
+        api.get("appointments/next/27")
             .then(response => {
                 console.log("NEXT APPOINTMENT:", JSON.stringify(response.data))
                 setNextAppointment(response.data)
