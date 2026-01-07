@@ -49,7 +49,7 @@ export default function NextAppointment() {
     const [date, time] = formatDate(nextAppointment.date.toString())
 
     return (
-        <View className="border-primary rounded-2xl bg-white border-hairline m-6 p-4 justify-center gap-2">
+        <View className="border-primary rounded-2xl bg-white border-hairline p-4 justify-center gap-2">
             <View className="flex-row gap-2">
                 <View className="flex-1 flex-row gap-2">
                     <View className="bg-gray-200 rounded-full aspect-square items-center justify-center">

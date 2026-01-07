@@ -1,15 +1,12 @@
-import Feather from "@expo/vector-icons/Feather"
-import { Text, TextInput, View } from "react-native"
+import { Text, View } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import NextAppointment from "../components/cards/next-appointment"
+import SearchBar from "../components/search-bar"
 
 export default function Index() {
     return (
-        <SafeAreaView className="flex-1 bg-pink-50">
-            <View className="m-6 p-2 rounded-2xl bg-primary flex-row items-center justify-center">
-                <Feather name="search" size={24} color="black" className="px-4" />
-                <TextInput className="flex-1" placeholder="Busque pelo que você precisa" />
-            </View>
+        <SafeAreaView className="flex-1 bg-pink-50 px-6">
+            <SearchBar />
             <NextAppointment />
 
             {/* <ScrollView horizontal bounces={true} showsHorizontalScrollIndicator={false}>

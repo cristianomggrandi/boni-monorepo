@@ -69,6 +69,7 @@ async function main() {
     const business = await prisma.business.create({
         data: {
             name: "Salão Boni",
+            image: "https://example.com/salao-boni.jpg",
         },
     })
 
@@ -174,6 +175,130 @@ async function main() {
             },
         },
     })
+
+    // Adicionar 5 novos businesses com imagens de teste
+    const businessesData = [
+        {
+            name: "Barbearia Elite",
+            image: "https://example.com/barbearia-elite.jpg",
+            city: "Rio de Janeiro",
+            state: "RJ",
+            lat: -22.9068,
+            lng: -43.1729,
+        },
+        {
+            name: "Salão Glamour",
+            image: "https://example.com/salao-glamour.jpg",
+            city: "Belo Horizonte",
+            state: "MG",
+            lat: -19.9191,
+            lng: -43.9386,
+        },
+        {
+            name: "Estética Bella",
+            image: "https://example.com/estetica-bella.jpg",
+            city: "Porto Alegre",
+            state: "RS",
+            lat: -30.0346,
+            lng: -51.2177,
+        },
+        {
+            name: "Cabelos & Cia",
+            image: "https://example.com/cabelos-cia.jpg",
+            city: "Salvador",
+            state: "BA",
+            lat: -12.9714,
+            lng: -38.5014,
+        },
+        {
+            name: "Beleza Total",
+            image: "https://example.com/beleza-total.jpg",
+            city: "Brasília",
+            state: "DF",
+            lat: -15.7942,
+            lng: -47.8822,
+        },
+    ]
+
+    for (let i = 0; i < businessesData.length; i++) {
+        const bizData = businessesData[i]
+
+        // Criar user para manager
+        const managerUser = await prisma.user.create({
+            data: {
+                email: `${bizData.name.toLowerCase().replace(/\s+/g, "")}@example.com`,
+                name: `Manager ${bizData.name}`,
+                password: "hashedpassword",
+                role: Role.WORKER,
+            },
+        })
+
+        // Criar business
+        const newBusiness = await prisma.business.create({
+            data: {
+                name: bizData.name,
+                image: bizData.image,
+            },
+        })
+
+        // Criar worker
+        const newWorker = await prisma.worker.create({
+            data: {
+                userId: managerUser.id,
+                businessId: newBusiness.id,
+                employeeId: `EMP${Math.floor(Math.random() * 1000)}`,
+                hireDate: new Date("2023-01-01"),
+            },
+        })
+
+        // Atualizar business com manager
+        await prisma.business.update({
+            where: { id: newBusiness.id },
+            data: { managerId: managerUser.id },
+        })
+
+        // Criar address
+        await prisma.address.create({
+            data: {
+                businessId: newBusiness.id,
+                streetNumber: "456",
+                street: "Rua Secundária",
+                city: bizData.city,
+                state: bizData.state,
+                zipCode: "01234-568",
+                country: "Brasil",
+                latitude: bizData.lat,
+                longitude: bizData.lng,
+            },
+        })
+
+        // Criar service
+        const newService = await prisma.service.create({
+            data: {
+                name: "Corte Básico",
+                description: "Corte simples",
+                businessId: newBusiness.id,
+                categoryId: category.id,
+            },
+        })
+
+        // Criar appointment de exemplo
+
+        const appointmentDate = new Date("2026-01-10T11:00:00Z")
+        appointmentDate.setDate(appointmentDate.getDate() + i) // Adiciona i dias para variar
+
+        await prisma.appointment.create({
+            data: {
+                date: appointmentDate,
+                userId: user.id,
+                businessId: newBusiness.id,
+                workerId: managerUser.id,
+                services: {
+                    connect: { id: newService.id },
+                },
+            },
+        })
+    }
 
     console.log("Database seeded successfully!")
 }

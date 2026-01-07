@@ -5,8 +5,8 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider     = "prisma-client"
+  output       = "../generated/prisma"
   moduleFormat = "cjs"
 }
 
@@ -74,6 +74,7 @@ model Business {
   managerId   Int?
   manager     Worker?       @relation("manages", fields: [managerId], references: [userId])
   categories  Category[]
+  image       String?
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
   Appointment Appointment[]
@@ -114,17 +115,17 @@ model Service {
 
 // TODO: If the service details changes after the appointment, how do we handle that?
 model Appointment {
-  id         Int      @id @default(autoincrement())
+  id         Int       @id @default(autoincrement())
   date       DateTime
   services   Service[]
   userId     Int
-  user       User     @relation("User", fields: [userId], references: [id])
+  user       User      @relation("User", fields: [userId], references: [id])
   businessId Int
-  business   Business @relation(fields: [businessId], references: [id])
+  business   Business  @relation(fields: [businessId], references: [id])
   workerId   Int
-  worker     Worker   @relation(fields: [workerId], references: [userId])
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  worker     Worker    @relation(fields: [workerId], references: [userId])
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 
   @@unique([userId, date])
   @@unique([workerId, date])
