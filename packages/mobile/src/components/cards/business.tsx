@@ -2,7 +2,7 @@ import { Prisma } from "@boni/database/dist/generated/prisma/client"
 import FontAwesome from "@expo/vector-icons/FontAwesome"
 import { Image } from "expo-image"
 import { View } from "react-native"
-import StyledText from "../styled-text"
+import StyledText from "../styled/styled-text"
 
 export default function BusinessCard({ business }: { business: Prisma.BusinessGetPayload<{}> }) {
     return (

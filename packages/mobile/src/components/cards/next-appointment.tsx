@@ -3,7 +3,8 @@ import { Prisma } from "@boni/database/dist/generated/prisma/client"
 import Entypo from "@expo/vector-icons/Entypo"
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons"
 import { useEffect, useState } from "react"
-import { Pressable, Text, View } from "react-native"
+import { Text, View } from "react-native"
+import StyledButton from "../styled/styled-button"
 
 const meses = [
     "Jan.",
@@ -74,13 +75,13 @@ export default function NextAppointment() {
                 <Text className="text-sm">{time}</Text>
             </View>
             <View className="flex-row gap-2">
-                <Pressable className="p-2 flex-1 bg-white text-gray-500 items-center justify-center border-hairline rounded-xl border-gray-500">
+                <StyledButton>
                     <Text className="font-semibold">Cancelar</Text>
-                </Pressable>
+                </StyledButton>
 
-                <Pressable className="p-2 flex-1 bg-primary text-gray-500 items-center justify-center rounded-xl">
+                <StyledButton className="bg-primary">
                     <Text className="font-semibold">Reagendar</Text>
-                </Pressable>
+                </StyledButton>
             </View>
         </View>
     )

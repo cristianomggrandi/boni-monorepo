@@ -1,6 +1,6 @@
 import { Category } from "@boni/database/dist/generated/prisma/client"
 import { FlatList, Pressable, View } from "react-native"
-import StyledText from "./styled-text"
+import StyledText from "./styled/styled-text"
 
 export default function CategoryList({
     categories,
