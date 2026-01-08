@@ -3,10 +3,10 @@ import { FlashList } from "@shopify/flash-list"
 import { useEffect, useState } from "react"
 import { View } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
-import api from "../api/boni-api"
-import BusinessCard from "../components/cards/business"
-import CategoryList from "../components/category-list"
-import SearchBar from "../components/search-bar"
+import api from "../../api/boni-api"
+import BusinessCard from "../../components/cards/business"
+import CategoryList from "../../components/category-list"
+import SearchBar from "../../components/search-bar"
 
 export default function Search() {
     const [businessList, setBusinessList] = useState<Business[]>([])

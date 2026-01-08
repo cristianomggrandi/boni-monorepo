@@ -2,8 +2,6 @@ import { cn } from "@/src/util/styling"
 import { Pressable, PressableProps } from "react-native"
 
 export default function StyledButton({ className, children, ...props }: PressableProps) {
-    console.log("className teste:", className)
-
     return (
         <Pressable
             className={cn(

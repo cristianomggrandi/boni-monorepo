@@ -1,5 +1,4 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from "@nestjs/common"
-import { Public } from "src/auth/auth.guard"
 import type { UserJWTPayload } from "../auth/types"
 import { User } from "../auth/user.decorator"
 import { AppointmentsService } from "./appointments.service"
@@ -25,7 +24,6 @@ export class AppointmentsController {
         return this.appointmentsService.next(user.sub)
     }
 
-    @Public()
     @Get("next/:userId")
     findNextById(@Param("userId") id: string) {
         return this.appointmentsService.next(+id)

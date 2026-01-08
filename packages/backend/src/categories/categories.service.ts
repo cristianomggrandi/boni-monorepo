@@ -35,4 +35,10 @@ export class CategoriesService {
     remove(id: number) {
         return this.prisma.category.delete({ where: { id } })
     }
+
+    findSubcategories(id: number) {
+        return this.prisma.category.findMany({
+            where: { parentId: id },
+        })
+    }
 }

@@ -14,14 +14,14 @@ export class AuthController {
     async login(@Body() data: LoginUserDto, @Res({ passthrough: true }) response: Response) {
         const jwt = await this.authService.login(data)
 
-        response.cookie("accessToken", jwt, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            // sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // Recommended: 'strict', helps prevent CSRF attacks
-            sameSite: "none",
-            maxAge: 3600000, // Cookie expiration time (e.g., 1 hour in milliseconds)
-            path: "/",
-        })
+        // response.cookie("accessToken", jwt, {
+        //     httpOnly: true,
+        //     secure: process.env.NODE_ENV === "production",
+        //     // sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // Recommended: 'strict', helps prevent CSRF attacks
+        //     sameSite: "none",
+        //     maxAge: 3600000, // Cookie expiration time (e.g., 1 hour in milliseconds)
+        //     path: "/",
+        // })
 
         return jwt
     }
@@ -31,13 +31,13 @@ export class AuthController {
     async signup(@Body() data: RegisterUserDto, @Res({ passthrough: true }) response: Response) {
         const jwt = await this.authService.signup(data)
 
-        response.cookie("accessToken", jwt, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            // sameSite: "strict", // Recommended: helps prevent CSRF attacks
-            maxAge: 3600000, // Cookie expiration time (e.g., 1 hour in milliseconds)
-            path: "/",
-        })
+        // response.cookie("accessToken", jwt, {
+        //     httpOnly: true,
+        //     secure: process.env.NODE_ENV === "production",
+        //     // sameSite: "strict", // Recommended: helps prevent CSRF attacks
+        //     maxAge: 3600000, // Cookie expiration time (e.g., 1 hour in milliseconds)
+        //     path: "/",
+        // })
 
         return jwt
     }

@@ -37,13 +37,12 @@ export class AuthGuard implements CanActivate {
         if (isPublic) return true
 
         const request = context.switchToHttp().getRequest()
-        // const token = this.extractTokenFromHeader(request)
-        const token = request.cookies.accessToken
+        const token = this.extractTokenFromHeader(request)
+        // const token = request.cookies.accessToken
 
         if (!token) throw new UnauthorizedException()
 
         try {
-            console.log("Teste 2:", token)
             const payload: UserJWTPayload = await this.jwtService.verifyAsync(token, {
                 secret: process.env.JWT_SECRET,
             })
@@ -69,7 +68,6 @@ export class AuthGuard implements CanActivate {
             [context.getHandler(), context.getClass()]
         )
 
-        console.log("request.user:", request.user)
         if (isAdminOrOwnUser && request.user.sub !== Number(request.params.id))
             throw new ForbiddenException("You cannot change other user's data")
 

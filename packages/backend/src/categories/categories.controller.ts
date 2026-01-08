@@ -19,6 +19,11 @@ export class CategoriesController {
         return this.categoriesService.findAll()
     }
 
+    @Get(":id/subcategories")
+    findSubcategories(@Param("id") id: string) {
+        return this.categoriesService.findSubcategories(+id)
+    }
+
     @Get(":id")
     findOne(@Param("id") id: string) {
         return this.categoriesService.findOne(+id)

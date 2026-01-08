@@ -5,17 +5,20 @@ import {
     PlusJakartaSans_700Bold,
     useFonts,
 } from "@expo-google-fonts/plus-jakarta-sans"
-import Feather from "@expo/vector-icons/Feather"
-import FontAwesome6 from "@expo/vector-icons/FontAwesome6"
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons"
-import { Tabs } from "expo-router"
+import { Stack, useRouter, useSegments } from "expo-router"
 import * as SplashScreen from "expo-splash-screen"
 import { useEffect } from "react"
 import "../../global.css"
+import useAuthStore from "../stores/auth-store"
 
 SplashScreen.preventAutoHideAsync()
 
 export default function RootLayout() {
+    const isLoggedIn = useAuthStore(s => s.isLoggedIn)
+    const initializeAuthStore = useAuthStore(s => s.initialize)
+    const segments = useSegments()
+    const router = useRouter()
+
     const [loaded, error] = useFonts({
         PlusJakarta: PlusJakartaSans_400Regular,
         "Jakarta-SemiBold": PlusJakartaSans_600SemiBold,
@@ -24,57 +27,31 @@ export default function RootLayout() {
     })
 
     useEffect(() => {
+        initializeAuthStore()
+    }, [])
+
+    useEffect(() => {
         if (loaded || error) {
             SplashScreen.hideAsync()
         }
     }, [loaded, error])
 
-    if (!loaded && !error) {
-        return null
-    }
+    useEffect(() => {
+        const inTabsGroup = segments[0] === "(tabs)"
+
+        if (!isLoggedIn && inTabsGroup) {
+            router.replace("/(auth)/login")
+        } else if (isLoggedIn && segments[0] === "(auth)") {
+            router.replace("/(tabs)")
+        }
+    }, [isLoggedIn, segments])
+
+    if (!loaded && !error) return null
 
     return (
-        <Tabs screenOptions={{ headerShown: false }}>
-            <Tabs.Screen
-                name="index"
-                options={{
-                    tabBarIcon: ({ color, focused }) => (
-                        <FontAwesome6 name="house" size={22} color="black" />
-                    ),
-                    tabBarShowLabel: false,
-                }}
-            />
-            <Tabs.Screen
-                name="search"
-                options={{
-                    tabBarIcon: ({ color, focused }) => (
-                        <Feather name="search" size={24} color="black" />
-                    ),
-                    tabBarShowLabel: false,
-                }}
-            />
-            <Tabs.Screen
-                name="map"
-                options={{
-                    tabBarIcon: ({ color, focused }) => (
-                        <Feather name="map" size={24} color="black" />
-                    ),
-                    tabBarShowLabel: false,
-                }}
-            />
-            <Tabs.Screen
-                name="profile"
-                options={{
-                    tabBarIcon: ({ color, focused }) => (
-                        <MaterialCommunityIcons
-                            name="face-woman-shimmer-outline"
-                            size={24}
-                            color="black"
-                        />
-                    ),
-                    tabBarShowLabel: false,
-                }}
-            />
-        </Tabs>
+        <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="(auth)" options={{ animation: "fade" }} />
+            <Stack.Screen name="(tabs)" options={{ animation: "fade" }} />
+        </Stack>
     )
 }
