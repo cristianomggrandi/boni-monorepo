@@ -2,10 +2,10 @@ import { Business, Category } from "@boni/database/dist/generated/prisma/client"
 import { FlashList } from "@shopify/flash-list"
 import { useEffect, useState } from "react"
 import { View } from "react-native"
-import { SafeAreaView } from "react-native-safe-area-context"
 import api from "../api/boni-api"
 import BusinessCard from "../components/cards/business"
 import CategoryList from "../components/category-list"
+import PageContainer from "../components/page-container"
 import SearchBar from "../components/search-bar"
 
 export default function Search() {
@@ -44,7 +44,7 @@ export default function Search() {
     }, [])
 
     return (
-        <SafeAreaView edges={["top"]} className="flex-1 flex-col bg-[#FCF8F8]">
+        <PageContainer>
             {/* TODO: Colocar SafeAreaView em componente para reutilizar com o mesmo espaçamento */}
             {/* TODO: Checar se quero px-6 ou p-6 ou (px-6 + py-4) */}
             <View className="px-6">
@@ -60,6 +60,7 @@ export default function Search() {
                 categories={subCategories}
                 setSelectedCategory={setSelectedSubCategory}
                 selectedCategory={selectedSubCategory}
+                size="small"
             />
             <View className="flex-1">
                 <FlashList
@@ -73,6 +74,6 @@ export default function Search() {
                     contentContainerClassName="pt-2 pb-4"
                 />
             </View>
-        </SafeAreaView>
+        </PageContainer>
     )
 }
