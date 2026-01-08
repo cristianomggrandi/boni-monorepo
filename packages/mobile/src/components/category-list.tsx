@@ -1,36 +1,39 @@
 import { Category } from "@boni/database/dist/generated/prisma/client"
-import { useEffect, useState } from "react"
-import { ScrollView, View } from "react-native"
-import api from "../api/boni-api"
+import { FlatList, Pressable, View } from "react-native"
 import StyledText from "./styled-text"
 
-export default function CategoryList() {
-    const [categories, setCategories] = useState<Category[]>([])
-    const [selectedCategory, setSelectedCategory] = useState<Category>()
-
-    useEffect(() => {
-        api.get("categories")
-            .then(response => setCategories(response.data))
-            .catch(err => console.log(err))
-    }, [])
+export default function CategoryList({
+    categories,
+    selectedCategory,
+    setSelectedCategory,
+}: {
+    categories: Category[]
+    selectedCategory?: Category
+    setSelectedCategory: React.Dispatch<React.SetStateAction<Category | undefined>>
+}) {
+    if (!categories.length) return null
 
     return (
-        <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            bounces={false}
-            className="mt-2 grow-0 py-2 px-6"
-        >
-            <View className="h-full w-full flex-row gap-2">
-                {categories.map(category => (
-                    <View
-                        key={category.id}
-                        className="p-2 bg-white rounded-full elevation-sm border-0 "
+        <View className="mt-2 px-6">
+            <FlatList
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                data={categories}
+                extraData={selectedCategory?.id} // Tells FlatList to re-render when this ID changes
+                keyExtractor={item => item.id.toString()}
+                renderItem={({ item }) => (
+                    <Pressable
+                        key={item.id}
+                        className={`
+                            p-2 rounded-full active:bg-secondary
+                            ${selectedCategory?.id === item.id ? "bg-secondary" : "bg-white"}
+                        `}
+                        onPress={() => setSelectedCategory(item)}
                     >
-                        <StyledText className="">{category.name}</StyledText>
-                    </View>
-                ))}
-            </View>
-        </ScrollView>
+                        <StyledText>{item.name}</StyledText>
+                    </Pressable>
+                )}
+            />
+        </View>
     )
 }
