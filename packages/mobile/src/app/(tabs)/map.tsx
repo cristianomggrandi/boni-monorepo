@@ -1,16 +1,5 @@
-import { Link } from "expo-router"
-import { Text, View } from "react-native"
+import MapPage from "@/src/pages/map"
 
-export default function Index() {
-    return (
-        <View
-            style={{
-                flex: 1,
-                justifyContent: "center",
-                alignItems: "center",
-            }}
-        >
-            <Text>MAP</Text>
-        </View>
-    )
+export default function Map() {
+    return <MapPage />
 }

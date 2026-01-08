@@ -21,6 +21,7 @@ export default function CategoryList({
                 data={categories}
                 extraData={selectedCategory?.id} // Tells FlatList to re-render when this ID changes
                 keyExtractor={item => item.id.toString()}
+                contentContainerClassName="gap-1"
                 renderItem={({ item }) => (
                     <Pressable
                         key={item.id}

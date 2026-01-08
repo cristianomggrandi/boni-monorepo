@@ -57,12 +57,7 @@ export default function LoginPage() {
                         </View>
                     )}
                 />
-                <StyledButton
-                    className="mt-4 p-4 w-full bg-primary"
-                    onPress={handleSubmit(login, errors => {
-                        console.error("LOGIN Errors:", errors)
-                    })}
-                >
+                <StyledButton className="mt-4 p-4 w-full bg-primary" onPress={handleSubmit(login)}>
                     <StyledText className="">Login</StyledText>
                 </StyledButton>
             </View>
