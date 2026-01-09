@@ -6,7 +6,7 @@ import StyledText from "../styled/styled-text"
 
 export default function BusinessCard({ business }: { business: Prisma.BusinessGetPayload<{}> }) {
     return (
-        <View className="rounded-2xl bg-white border-0 p-4 justify-center gap-2 flex-row elevation-sm">
+        <View className="rounded-2xl bg-white border-0 p-4 justify-center gap-2 flex-row elevation">
             <View>
                 {business.image ? (
                     <Image

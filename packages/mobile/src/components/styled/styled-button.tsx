@@ -5,7 +5,7 @@ export default function StyledButton({ className, children, ...props }: Pressabl
     return (
         <Pressable
             className={cn(
-                "p-2 elevation-sm bg-white text-gray-500 items-center justify-center rounded-xl border-gray-100",
+                "p-2 elevation bg-white text-gray-500 items-center justify-center rounded-xl border-gray-100",
                 className
             )}
             {...props}

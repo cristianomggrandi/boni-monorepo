@@ -16,19 +16,19 @@ export default function CategoryList({
     if (!categories.length) return null
 
     return (
-        <View className="mt-1 px-6">
+        <View className="">
             <FlatList
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 data={categories}
                 extraData={selectedCategory?.id} // Tells FlatList to re-render when this ID changes
                 keyExtractor={item => item.id.toString()}
-                contentContainerClassName="gap-1 py-1"
+                contentContainerClassName="gap-1 p-1"
                 renderItem={({ item }) => (
                     <Pressable
                         key={item.id}
                         className={`
-                            p-2 rounded-full active:bg-secondary elevation-sm
+                            p-2 rounded-full active:bg-secondary elevation
                             ${size === "small" ? "py-1" : "py-2"}
                             ${selectedCategory?.id === item.id ? "bg-secondary" : "bg-white"}
                         `}

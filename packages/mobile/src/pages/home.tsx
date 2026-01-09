@@ -1,48 +1,39 @@
-import { Text, View } from "react-native"
-import { SafeAreaView } from "react-native-safe-area-context"
+import Foundation from "@expo/vector-icons/Foundation"
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons"
+import { View } from "react-native"
 import NextAppointment from "../components/cards/next-appointment"
+import PageContainer from "../components/page-container"
 import SearchBar from "../components/search-bar"
+import StyledIcon from "../components/styled/styled-icon"
+import StyledText from "../components/styled/styled-text"
 
 export default function HomePage() {
     return (
-        <SafeAreaView edges={["top"]} className="flex-1 bg-pink-50 px-6">
-            <SearchBar />
-            <NextAppointment />
-
-            {/* <ScrollView horizontal bounces={true} showsHorizontalScrollIndicator={false}>
-                    <View className="flex-row gap-2 px-2">
-                        <View className="w-16 h-16 items-center justify-center rounded-full border-white border-2">
-                            <Text className="text-xs text-white">Hair</Text>
-                        </View>
-                        <View className="w-16 h-16 items-center justify-center rounded-full border-white border-2">
-                            <Text className="text-xs text-white">Nails</Text>
-                        </View>
-                        <View className="w-16 h-16 items-center justify-center rounded-full border-white border-2">
-                            <Text className="text-xs text-white">Makeup</Text>
-                        </View>
-                        <View className="w-16 h-16 items-center justify-center rounded-full border-white border-2">
-                            <Text className="text-xs text-white">Massage</Text>
-                        </View>
-                        <View className="w-16 h-16 items-center justify-center rounded-full border-white border-2">
-                            <Text className="text-xs text-white">Eyebrows</Text>
-                        </View>
-                        <View className="w-16 h-16 items-center justify-center rounded-full border-white border-2">
-                            <Text className="text-xs text-white">Colorist</Text>
-                        </View>
-                        <View className="w-16 h-16 items-center justify-center rounded-full border-white border-2">
-                            <Text className="text-xs text-white">Colorist</Text>
-                        </View>
-                    </View>
-                </ScrollView> */}
-
-            <View>
-                <View>
-                    <Text>Estabelecimento 1</Text>
+        <PageContainer className="gap-2">
+            <View className="p-2 flex-row justify-between">
+                <View className="flex-row">
+                    <StyledIcon>
+                        <MaterialCommunityIcons name="face-woman-profile" size={24} color="black" />
+                    </StyledIcon>
                 </View>
-                <View>
-                    <Text>Estabelecimento 2</Text>
+                <View className="flex-row gap-2">
+                    <StyledIcon>
+                        <Foundation name="heart" size={30} color="black" />
+                    </StyledIcon>
+                    <StyledIcon>
+                        <MaterialCommunityIcons name="bell" size={24} color="black" />
+                    </StyledIcon>
                 </View>
             </View>
-        </SafeAreaView>
+            <View className="p-4 mb-4">
+                <View>
+                    <StyledText className="uppercase text-sm font-semibold">Bom dia,</StyledText>
+                    <StyledText className="font-bold text-4xl">Nina</StyledText>
+                </View>
+            </View>
+
+            <SearchBar />
+            <NextAppointment />
+        </PageContainer>
     )
 }

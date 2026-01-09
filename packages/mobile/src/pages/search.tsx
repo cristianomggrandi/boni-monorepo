@@ -47,9 +47,7 @@ export default function Search() {
         <PageContainer>
             {/* TODO: Colocar SafeAreaView em componente para reutilizar com o mesmo espaçamento */}
             {/* TODO: Checar se quero px-6 ou p-6 ou (px-6 + py-4) */}
-            <View className="px-6">
-                <SearchBar />
-            </View>
+            <SearchBar />
             <CategoryList
                 categories={categories}
                 setSelectedCategory={setSelectedCategory}
@@ -64,14 +62,13 @@ export default function Search() {
             />
             <View className="flex-1">
                 <FlashList
-                    className="px-6"
                     data={businessList}
                     renderItem={({ item }) => <BusinessCard business={item} key={item.id} />}
                     keyExtractor={(item, index) => (item.id + 10 * index).toString()}
                     showsVerticalScrollIndicator={false}
                     ListEmptyComponent={<View>{/* TODO: Criar Skeleton */}</View>}
                     ItemSeparatorComponent={() => <View className="h-2" />}
-                    contentContainerClassName="pt-2 pb-4"
+                    contentContainerClassName="pt-2 pb-4 px-2"
                 />
             </View>
         </PageContainer>

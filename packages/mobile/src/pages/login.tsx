@@ -28,7 +28,7 @@ export default function LoginPage() {
                     control={control}
                     name="email"
                     render={({ field: { onChange, onBlur, value } }) => (
-                        <View className="p-2 rounded-2xl bg-white elevation-sm border-0 flex-row items-center justify-center">
+                        <View className="p-2 rounded-2xl bg-white elevation border-0 flex-row items-center justify-center">
                             <StyledTextInput
                                 placeholder="E-mail"
                                 textContentType="emailAddress"
@@ -44,7 +44,7 @@ export default function LoginPage() {
                     control={control}
                     name="password"
                     render={({ field: { onChange, onBlur, value } }) => (
-                        <View className="p-2 rounded-2xl bg-white elevation-sm border-0 flex-row items-center justify-center">
+                        <View className="p-2 rounded-2xl bg-white elevation border-0 flex-row items-center justify-center">
                             <StyledTextInput
                                 placeholder="Senha"
                                 textContentType="password"
