@@ -55,7 +55,7 @@ export class AppointmentsService {
                 date: { gte: new Date() },
             },
             orderBy: { date: "asc" },
-            include: { business: true, services: true },
+            include: { business: true, services: true, worker: { include: { user: true } } },
         })
     }
 }

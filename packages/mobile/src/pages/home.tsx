@@ -1,6 +1,7 @@
 import Foundation from "@expo/vector-icons/Foundation"
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons"
-import { View } from "react-native"
+import { Suspense } from "react"
+import { Text, View } from "react-native"
 import NextAppointment from "../components/cards/next-appointment"
 import PageContainer from "../components/page-container"
 import SearchBar from "../components/search-bar"
@@ -31,9 +32,10 @@ export default function HomePage() {
                     <StyledText className="font-bold text-4xl">Nina</StyledText>
                 </View>
             </View>
-
             <SearchBar />
-            <NextAppointment />
+            <Suspense fallback={<Text>Teste</Text>}>
+                <NextAppointment />
+            </Suspense>
         </PageContainer>
     )
 }
