@@ -2,6 +2,7 @@ import Feather from "@expo/vector-icons/Feather"
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6"
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons"
 import { Tabs } from "expo-router"
+import { View } from "react-native"
 
 export default function TabsLayout() {
     return (
@@ -10,7 +11,11 @@ export default function TabsLayout() {
                 name="index"
                 options={{
                     tabBarIcon: ({ color, focused }) => (
-                        <FontAwesome6 name="house" size={22} color="black" />
+                        <View
+                            className={`w-16 h-10 rounded-full items-center justify-center ${focused ? "bg-primary" : ""}`}
+                        >
+                            <FontAwesome6 name="house" size={22} color="black" />
+                        </View>
                     ),
                     tabBarShowLabel: false,
                 }}
@@ -19,7 +24,11 @@ export default function TabsLayout() {
                 name="search"
                 options={{
                     tabBarIcon: ({ color, focused }) => (
-                        <Feather name="search" size={24} color="black" />
+                        <View
+                            className={`w-16 h-10 rounded-full items-center justify-center ${focused ? "bg-primary" : ""}`}
+                        >
+                            <Feather name="search" size={24} color="black" />
+                        </View>
                     ),
                     tabBarShowLabel: false,
                 }}
@@ -28,7 +37,11 @@ export default function TabsLayout() {
                 name="map"
                 options={{
                     tabBarIcon: ({ color, focused }) => (
-                        <Feather name="map" size={24} color="black" />
+                        <View
+                            className={`w-16 h-10 rounded-full items-center justify-center ${focused ? "bg-primary" : ""}`}
+                        >
+                            <Feather name="map" size={24} color="black" />
+                        </View>
                     ),
                     tabBarShowLabel: false,
                 }}
@@ -37,11 +50,15 @@ export default function TabsLayout() {
                 name="profile"
                 options={{
                     tabBarIcon: ({ color, focused }) => (
-                        <MaterialCommunityIcons
-                            name="face-woman-shimmer-outline"
-                            size={24}
-                            color="black"
-                        />
+                        <View
+                            className={`w-16 h-10 rounded-full items-center justify-center ${focused ? "bg-primary" : ""}`}
+                        >
+                            <MaterialCommunityIcons
+                                name="face-woman-shimmer-outline"
+                                size={24}
+                                color="black"
+                            />
+                        </View>
                     ),
                     tabBarShowLabel: false,
                 }}
