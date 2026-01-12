@@ -1,4 +1,5 @@
 import { Business, Category } from "@boni/database/dist/generated/prisma/client"
+import Ionicons from "@expo/vector-icons/Ionicons"
 import { FlashList } from "@shopify/flash-list"
 import { useEffect, useState } from "react"
 import { View } from "react-native"
@@ -7,6 +8,8 @@ import BusinessCard from "../components/cards/business"
 import CategoryList from "../components/category-list"
 import PageContainer from "../components/page-container"
 import SearchBar from "../components/search-bar"
+import StyledIcon from "../components/styled/styled-icon"
+import StyledText from "../components/styled/styled-text"
 
 export default function Search() {
     const [businessList, setBusinessList] = useState<Business[]>([])
@@ -53,13 +56,21 @@ export default function Search() {
                 setSelectedCategory={setSelectedCategory}
                 selectedCategory={selectedCategory}
             />
-            {/* TODO: Criar Skeleton para carregar subcategories (JQuery? ReactQuery?) */}
+            {/* TODO: Criar Skeleton para carregar subcategories (JQuery? ReactQuery?, React hook use?) */}
             <CategoryList
                 categories={subCategories}
                 setSelectedCategory={setSelectedSubCategory}
                 selectedCategory={selectedSubCategory}
                 size="small"
             />
+            <View className="flex-row items-center justify-between p-2">
+                <StyledText className="text-xl font-semibold">
+                    {businessList.length} resultados
+                </StyledText>
+                <StyledIcon>
+                    <Ionicons name="options-outline" size={24} color="black" />
+                </StyledIcon>
+            </View>
             <View className="flex-1">
                 <FlashList
                     data={businessList}
