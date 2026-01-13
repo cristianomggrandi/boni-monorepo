@@ -1,5 +1,6 @@
 import Foundation from "@expo/vector-icons/Foundation"
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons"
+import { Link } from "expo-router"
 import { Suspense } from "react"
 import { Text, View } from "react-native"
 import NextAppointment from "../components/cards/next-appointment"
@@ -10,12 +11,18 @@ import StyledText from "../components/styled/styled-text"
 
 export default function HomePage() {
     return (
-        <PageContainer className="gap-2">
+        <PageContainer enableSafeSpace className="gap-2">
             <View className="p-2 flex-row justify-between">
                 <View className="flex-row">
-                    <StyledIcon>
-                        <MaterialCommunityIcons name="face-woman-profile" size={24} color="black" />
-                    </StyledIcon>
+                    <Link href="/profile">
+                        <StyledIcon>
+                            <MaterialCommunityIcons
+                                name="face-woman-profile"
+                                size={24}
+                                color="black"
+                            />
+                        </StyledIcon>
+                    </Link>
                 </View>
                 <View className="flex-row gap-2">
                     <StyledIcon>
@@ -33,7 +40,7 @@ export default function HomePage() {
                 </View>
             </View>
             <SearchBar />
-            <Suspense fallback={<Text>Teste</Text>}>
+            <Suspense fallback={<Text>// TODO:</Text>}>
                 <NextAppointment />
             </Suspense>
         </PageContainer>

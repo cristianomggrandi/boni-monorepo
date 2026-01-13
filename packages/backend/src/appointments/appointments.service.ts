@@ -24,8 +24,22 @@ export class AppointmentsService {
         })
     }
 
-    findAll() {
-        return this.prisma.appointment.findMany()
+    async findAll(id: number) {
+        const bookings = await this.prisma.appointment.findMany({
+            where: { userId: id },
+            include: { business: true, services: true },
+            orderBy: { date: "desc" },
+        })
+
+        const now = Date.now()
+        const separationIndex = bookings.findIndex(b => b.date.getTime() < now)
+
+        const finished = bookings.splice(separationIndex)
+
+        return {
+            upcoming: bookings,
+            finished: finished,
+        }
     }
 
     findOne(id: number) {

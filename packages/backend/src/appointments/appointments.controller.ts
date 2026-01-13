@@ -15,8 +15,8 @@ export class AppointmentsController {
     }
 
     @Get()
-    findAll() {
-        return this.appointmentsService.findAll()
+    findAll(@User() user: UserJWTPayload) {
+        return this.appointmentsService.findAll(user.sub)
     }
 
     @Get("next")

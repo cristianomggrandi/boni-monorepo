@@ -41,7 +41,7 @@ export default function NextAppointment() {
         <View className="gap-2 p-2 mt-2">
             <View className="flex-row items-center justify-between">
                 <StyledText className="font-bold text-xl">Próximo agendamento</StyledText>
-                <Link href="/(tabs)/calendar">
+                <Link href="/bookings">
                     <StyledIcon>
                         <FontAwesome5 name="calendar-alt" size={20} color="black" />
                     </StyledIcon>
@@ -57,7 +57,7 @@ export default function NextAppointment() {
                     </View>
                     <View className="flex-col flex-1">
                         <StyledText className="text-lg font-bold">
-                            {nextAppointment?.services[0].name}
+                            {nextAppointment.services[0].name}
                         </StyledText>
                         <StyledText className="text-sm">
                             {time} · {nextAppointment.worker.user.name}
