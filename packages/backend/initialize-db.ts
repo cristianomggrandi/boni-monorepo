@@ -118,7 +118,7 @@ async function main() {
 
         if (!category) category = mainCategory
 
-        // Criar subcategorias
+        // Criar subcategoriasCabelo
         for (const sub of catData.subcategories) {
             await prisma.category.create({
                 data: {
@@ -135,6 +135,9 @@ async function main() {
         data: {
             name: "Salão Boni",
             image: "https://example.com/salao-boni.jpg",
+            categories: {
+                connect: { id: category.id }, // Conecta à categoria "Cabelo"
+            },
         },
     })
 

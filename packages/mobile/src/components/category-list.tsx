@@ -32,7 +32,11 @@ export default function CategoryList({
                             ${size === "small" ? "py-1" : "py-2"}
                             ${selectedCategory?.id === item.id ? "bg-secondary" : "bg-white"}
                         `}
-                        onPress={() => setSelectedCategory(item)}
+                        onPress={() =>
+                            selectedCategory?.id === item.id
+                                ? setSelectedCategory(undefined)
+                                : setSelectedCategory(item)
+                        }
                     >
                         <StyledText>{item.name}</StyledText>
                     </Pressable>

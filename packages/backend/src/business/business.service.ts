@@ -1,3 +1,4 @@
+import { BusinessWhereInput } from "@boni/database/dist/generated/prisma/models"
 import { Injectable } from "@nestjs/common"
 import { PrismaService } from "../prisma/prisma.service"
 import { CreateBusinessDto } from "./dto/create-business.dto"
@@ -23,8 +24,21 @@ export class BusinessService {
         })
     }
 
-    findAll() {
-        return this.prisma.business.findMany({ include: { address: true } })
+    findAll(search: Record<string, string>) {
+        const where: BusinessWhereInput = {}
+
+        if (search.category) {
+            where.categories = {
+                some: {
+                    id: Number(search.category),
+                },
+            }
+        }
+
+        return this.prisma.business.findMany({
+            include: { address: true },
+            where,
+        })
     }
 
     findOne(id: number) {
