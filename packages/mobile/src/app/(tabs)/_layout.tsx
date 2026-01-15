@@ -40,6 +40,7 @@ export default function TabsLayout() {
                     tabBarLabel: ({ focused }) =>
                         focused ? <StyledText className="text-xs">Busca</StyledText> : null,
                     title: "Busca",
+                    headerShown: false,
                 }}
             />
             <Tabs.Screen

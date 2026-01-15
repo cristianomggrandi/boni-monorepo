@@ -5,11 +5,15 @@ export default function PageContainer({
     className,
     children,
     enableSafeSpace = false,
+    scrollEnabled = true,
     ...props
-}: SafeAreaViewProps & { enableSafeSpace?: boolean }) {
+}: SafeAreaViewProps & {
+    enableSafeSpace?: boolean
+    scrollEnabled?: boolean
+}) {
     return (
         <SafeAreaView
-            edges={enableSafeSpace ? ["top"] : []}
+            edges={enableSafeSpace ? ["top", "left", "right"] : ["left", "right"]}
             className={cn("flex-1 flex-col bg-background px-2 gap-2", className)}
             {...props}
         >
