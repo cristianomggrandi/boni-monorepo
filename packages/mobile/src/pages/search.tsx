@@ -75,26 +75,15 @@ function BusinessList({ list, isLoading }: { list: Business[]; isLoading: boolea
 function SearchHeader({ scrollY }: { scrollY: SharedValue<number> }) {
     const router = useRouter()
 
-    // 4. Create the animated style for the Back Button wrapper
     const animatedHeaderStyle = useAnimatedStyle(() => {
-        // We interpolate: as scroll goes from 0 to 50, width goes from 50 to 0
-        const width = interpolate(
-            scrollY.value,
-            [0, 60],
-            [50, 0], // Start width -> End width
-            Extrapolation.CLAMP
-        )
+        const width = interpolate(scrollY.value, [0, 60], [50, 0], Extrapolation.CLAMP)
 
-        // const opacity = interpolate(scrollY.value, [0, 40], [1, 0], Extrapolation.CLAMP)
-
-        // Push the element to the left as it disappears for a smoother effect
         const translateX = interpolate(scrollY.value, [0, 60], [0, -50], Extrapolation.CLAMP)
 
         return {
             width,
-            // opacity,
             transform: [{ translateX }],
-            overflow: "visible", // Important so the icon doesn't bleed out while shrinking
+            overflow: "visible",
         }
     })
 
@@ -113,7 +102,7 @@ function SearchHeader({ scrollY }: { scrollY: SharedValue<number> }) {
                     </StyledIcon>
                 </Pressable>
             </Animated.View>
-            <SearchBar style={animatedSearchBarStyle} />
+            <SearchBar containerStyle={animatedSearchBarStyle} />
         </View>
     )
 }

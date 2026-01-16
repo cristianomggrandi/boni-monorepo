@@ -1,8 +1,8 @@
 import Foundation from "@expo/vector-icons/Foundation"
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons"
-import { Link } from "expo-router"
+import { Link, useRouter } from "expo-router"
 import { Suspense } from "react"
-import { Text, View } from "react-native"
+import { Pressable, Text, View } from "react-native"
 import NextAppointment from "../components/cards/next-appointment"
 import PageContainer from "../components/page-container"
 import SearchBar from "../components/search-bar"
@@ -10,6 +10,8 @@ import StyledIcon from "../components/styled/styled-icon"
 import StyledText from "../components/styled/styled-text"
 
 export default function HomePage() {
+    const router = useRouter()
+
     return (
         <PageContainer enableSafeSpace className="gap-2">
             <View className="p-2 flex-row justify-between">
@@ -39,7 +41,9 @@ export default function HomePage() {
                     <StyledText className="font-bold text-4xl">Nina</StyledText>
                 </View>
             </View>
-            <SearchBar />
+            <Pressable onPress={() => router.push(`/search`)} className="h-16 px-2">
+                <SearchBar onChangeText={query => router.push(`/search?search=${query}`)} />
+            </Pressable>
             <Suspense fallback={<Text>// TODO:</Text>}>
                 <NextAppointment />
             </Suspense>
