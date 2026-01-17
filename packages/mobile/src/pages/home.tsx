@@ -1,4 +1,3 @@
-import Foundation from "@expo/vector-icons/Foundation"
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons"
 import { Link, useRouter } from "expo-router"
 import { Suspense } from "react"
@@ -28,7 +27,8 @@ export default function HomePage() {
                 </View>
                 <View className="flex-row gap-2">
                     <StyledIcon>
-                        <Foundation name="heart" size={30} color="black" />
+                        {/* <Foundation name="heart" size={30} color="black" /> */}
+                        <MaterialCommunityIcons name="cards-heart" size={24} color="black" />
                     </StyledIcon>
                     <StyledIcon>
                         <MaterialCommunityIcons name="bell" size={24} color="black" />

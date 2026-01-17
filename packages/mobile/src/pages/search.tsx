@@ -3,7 +3,7 @@ import Feather from "@expo/vector-icons/Feather"
 import Ionicons from "@expo/vector-icons/Ionicons"
 import { FlashList } from "@shopify/flash-list"
 import { useRouter } from "expo-router"
-import React, { use, useEffect, useState } from "react"
+import React, { use, useLayoutEffect, useState } from "react"
 import { ActivityIndicator, Pressable, View } from "react-native"
 import Animated, {
     Extrapolation,
@@ -24,19 +24,29 @@ import StyledText from "../components/styled/styled-text"
 type Filters = Record<string, string>
 
 async function getCategories() {
-    const response = await api.get("categories")
+    try {
+        const response = await api.get("categories")
 
-    return response.data
+        return response.data
+    } catch (error) {
+        console.log("CATEGORIES ERROR:", error)
+        return []
+    }
 }
 
 const getCategoriesPromise = getCategories()
 
 async function getBusinesses(filters: Filters): Promise<Business[]> {
-    const params = new URLSearchParams(filters)
+    try {
+        const params = new URLSearchParams(filters)
 
-    const response = await api.get("business?" + params.toString())
+        const response = await api.get("business?" + params.toString())
 
-    return response.data
+        return response.data
+    } catch (error) {
+        console.log("BUSINESS ERROR:", error)
+        return []
+    }
 }
 
 function BusinessList({ list, isLoading }: { list: Business[]; isLoading: boolean }) {
@@ -132,7 +142,7 @@ export default function Search() {
     const [subCategories, setSubCategories] = useState<Category[]>([])
     const [selectedSubCategory, setSelectedSubCategory] = useState<Category>()
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (selectedCategory) {
             api.get("categories/" + selectedCategory.id + "/subcategories")
                 .then(response => setSubCategories(response.data))
@@ -147,7 +157,7 @@ export default function Search() {
         setSelectedSubCategory(undefined)
     }, [selectedCategory])
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (selectedSubCategory) {
             addFilter("category", selectedSubCategory.id.toString())
         } else if (selectedCategory) {
@@ -157,7 +167,7 @@ export default function Search() {
         }
     }, [selectedSubCategory])
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         setLoadingBusinesses(true)
 
         getBusinesses(filters)

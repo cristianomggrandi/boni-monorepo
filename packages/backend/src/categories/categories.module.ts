@@ -8,3 +8,4 @@ import { CategoriesService } from "./categories.service"
     providers: [CategoriesService],
 })
 export class CategoriesModule {}
+// TODO: Alterar para BusinessCategoryModule

@@ -9,10 +9,11 @@ async function main() {
     // Limpar dados existentes (opcional, para re-seed)
     await prisma.appointment.deleteMany()
     await prisma.service.deleteMany()
+    await prisma.serviceGroup.deleteMany()
     await prisma.address.deleteMany()
     await prisma.worker.deleteMany()
     await prisma.business.deleteMany()
-    await prisma.category.deleteMany()
+    await prisma.businessCategory.deleteMany()
     await prisma.user.deleteMany()
 
     // User - Customer
@@ -106,21 +107,21 @@ async function main() {
         },
     ]
 
-    let category
+    let businessCategory
     for (const catData of categoriesData) {
         // Criar categoria principal
-        const mainCategory = await prisma.category.create({
+        const mainCategory = await prisma.businessCategory.create({
             data: {
                 name: catData.name,
                 description: catData.description,
             },
         })
 
-        if (!category) category = mainCategory
+        if (!businessCategory) businessCategory = mainCategory
 
-        // Criar subcategoriasCabelo
+        // Criar subcategorias
         for (const sub of catData.subcategories) {
-            await prisma.category.create({
+            await prisma.businessCategory.create({
                 data: {
                     name: sub.name,
                     description: sub.description,
@@ -136,7 +137,7 @@ async function main() {
             name: "Salão Boni",
             image: "https://example.com/salao-boni.jpg",
             categories: {
-                connect: { id: category.id }, // Conecta à categoria "Cabelo"
+                connect: { id: businessCategory.id }, // Conecta à categoria "Cabelo"
             },
         },
     })
@@ -172,13 +173,20 @@ async function main() {
         },
     })
 
+    // ServiceCategory for the business
+    const serviceGroup = await prisma.serviceGroup.create({
+        data: {
+            name: "Serviços Gerais",
+            businessId: business.id,
+        },
+    })
+
     // Service
     const service = await prisma.service.create({
         data: {
             name: "Corte de Cabelo",
             description: "Corte masculino",
-            businessId: business.id,
-            categoryId: category.id,
+            serviceGroup: { connect: { id: serviceGroup.id } },
         },
     })
 
@@ -340,13 +348,20 @@ async function main() {
             },
         })
 
+        // Criar serviceGroup
+        const newServiceGroup = await prisma.serviceGroup.create({
+            data: {
+                name: "Serviços Gerais",
+                businessId: newBusiness.id,
+            },
+        })
+
         // Criar service
         const newService = await prisma.service.create({
             data: {
                 name: "Corte Básico",
                 description: "Corte simples",
-                businessId: newBusiness.id,
-                categoryId: category.id,
+                serviceGroup: { connect: { id: newServiceGroup.id } },
             },
         })
 

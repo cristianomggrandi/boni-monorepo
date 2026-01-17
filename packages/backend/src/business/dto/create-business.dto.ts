@@ -49,7 +49,7 @@ export class CreateBusinessDto {
 
     @IsInt({ each: true })
     @IsPositive({ each: true })
-    categoryIds: number[]
+    serviceGroupIds: number[]
 
     @IsOptional()
     @ValidateNested()

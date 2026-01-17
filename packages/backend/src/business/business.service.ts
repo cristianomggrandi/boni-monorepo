@@ -9,18 +9,18 @@ export class BusinessService {
     constructor(private prisma: PrismaService) {}
 
     create(data: CreateBusinessDto) {
-        const { categoryIds, ...businessData } = data
+        const { serviceGroupIds, ...businessData } = data
 
         return this.prisma.business.create({
             data: {
                 ...businessData,
-                ...(categoryIds && {
+                ...(serviceGroupIds && {
                     categories: {
-                        connect: categoryIds.map(id => ({ id })),
+                        connect: serviceGroupIds.map(id => ({ id })),
                     },
                 }),
             },
-            include: { address: true, categories: true },
+            include: { address: true, serviceGroups: true },
         })
     }
 
@@ -42,7 +42,10 @@ export class BusinessService {
     }
 
     findOne(id: number) {
-        return this.prisma.business.findUnique({ where: { id }, include: { address: true } })
+        return this.prisma.business.findUnique({
+            where: { id },
+            include: { address: true, serviceGroups: true, categories: true },
+        })
     }
 
     update(id: number, data: UpdateBusinessDto) {

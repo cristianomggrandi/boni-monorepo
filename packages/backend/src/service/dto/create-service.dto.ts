@@ -16,5 +16,5 @@ export class CreateServiceDto {
     businessId: number
 
     @IsInt()
-    categoryId: number
+    serviceGroupId: number
 }

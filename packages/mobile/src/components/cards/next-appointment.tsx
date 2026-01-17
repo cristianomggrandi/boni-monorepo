@@ -23,9 +23,14 @@ function formatDate(dateString: string) {
 async function getNextAppointment(): Promise<Prisma.AppointmentGetPayload<{
     include: { services: true; business: true; worker: { include: { user: true } } }
 }> | null> {
-    const response = await api.get("appointments/next")
+    try {
+        const response = await api.get("appointments/next")
 
-    return response.data
+        return response.data
+    } catch (error) {
+        console.error("APPOINTMENT ERROR:", error)
+        return null
+    }
 }
 
 const nextAppointmentPromise = getNextAppointment()

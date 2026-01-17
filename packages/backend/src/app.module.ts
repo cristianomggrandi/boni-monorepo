@@ -6,6 +6,7 @@ import { AuthModule } from "./auth/auth.module"
 import { BusinessModule } from "./business/business.module"
 import { CategoriesModule } from "./categories/categories.module"
 import { PrismaModule } from "./prisma/prisma.module"
+import { ServiceGroupsModule } from "./service-group/service-group.module"
 import { ServiceModule } from "./service/service.module"
 import { UsersModule } from "./users/users.module"
 
@@ -14,10 +15,11 @@ import { UsersModule } from "./users/users.module"
         PrismaModule,
         UsersModule,
         AuthModule,
-        CategoriesModule,
         BusinessModule,
+        CategoriesModule,
         AppointmentsModule,
         ServiceModule,
+        ServiceGroupsModule,
     ],
     controllers: [AppController],
     providers: [AppService],

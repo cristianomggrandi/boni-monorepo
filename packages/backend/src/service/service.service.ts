@@ -8,7 +8,7 @@ export class ServiceService {
     constructor(private prisma: PrismaService) {}
 
     create(data: CreateServiceDto) {
-        return this.prisma.service.create({ data, include: { business: true, category: true } })
+        return this.prisma.service.create({ data })
     }
 
     findAll() {

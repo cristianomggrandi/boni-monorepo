@@ -10,7 +10,16 @@ export * from "../generated/prisma/client.js"
 export * from "../generated/prisma/enums.js"
 
 // Re-export commonly used types for convenience
-export type { Address, Appointment, Business, Category, Service, User, Worker } from "../generated/prisma/client.js"
+export type {
+    Address,
+    Appointment,
+    Business,
+    BusinessCategory,
+    Service,
+    ServiceGroup,
+    User,
+    Worker,
+} from "../generated/prisma/client.js"
 
 // Re-export enums as values (not just types)
 export { Role } from "../generated/prisma/enums.js"

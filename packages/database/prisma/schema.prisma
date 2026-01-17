@@ -52,33 +52,42 @@ model Worker {
   appointments      Appointment[]
 }
 
-model Category {
-  id            Int        @id @default(autoincrement())
-  name          String     @unique
+model BusinessCategory {
+  id            Int                @id @default(autoincrement())
+  name          String             @unique
   description   String
   // image String
   parentId      Int?
-  parent        Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
-  subcategories Category[] @relation("CategoryHierarchy")
+  parent        BusinessCategory?  @relation("BusinessCategoryHierarchy", fields: [parentId], references: [id])
+  subcategories BusinessCategory[] @relation("BusinessCategoryHierarchy")
   businesses    Business[]
-  Service       Service[]
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+}
+
+model ServiceGroup {
+  id         Int       @id @default(autoincrement())
+  name       String
+  businessId Int
+  business   Business  @relation(fields: [businessId], references: [id])
+  services   Service[]
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 }
 
 model Business {
-  id          Int           @id @default(autoincrement())
-  name        String
-  address     Address?
-  workers     Worker[]      @relation("worksAt")
-  managerId   Int?
-  manager     Worker?       @relation("manages", fields: [managerId], references: [userId])
-  categories  Category[]
-  image       String?
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  Appointment Appointment[]
-  Service     Service[]
+  id            Int                @id @default(autoincrement())
+  name          String
+  address       Address?
+  workers       Worker[]           @relation("worksAt")
+  managerId     Int?
+  manager       Worker?            @relation("manages", fields: [managerId], references: [userId])
+  categories    BusinessCategory[]
+  serviceGroups ServiceGroup[]
+  image         String?
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+  appointments  Appointment[]
 }
 
 model Address {
@@ -98,19 +107,15 @@ model Address {
 }
 
 model Service {
-  id           Int           @id @default(autoincrement())
-  name         String
-  description  String?
-  imageUrl     String?
-  // TODO: Should we connect the Service to the Business or should it be "global"
-  businessId   Int
-  business     Business      @relation(fields: [businessId], references: [id])
-  // TODO: Add workers?
-  categoryId   Int
-  category     Category      @relation(fields: [categoryId], references: [id])
-  appointments Appointment[]
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+  id             Int           @id @default(autoincrement())
+  name           String
+  description    String?
+  imageUrl       String?
+  serviceGroupId Int
+  serviceGroup   ServiceGroup  @relation(fields: [serviceGroupId], references: [id])
+  appointments   Appointment[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 }
 
 // TODO: If the service details changes after the appointment, how do we handle that?
