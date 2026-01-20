@@ -44,7 +44,11 @@ export class BusinessService {
     findOne(id: number) {
         return this.prisma.business.findUnique({
             where: { id },
-            include: { address: true, serviceGroups: true, categories: true },
+            include: {
+                address: true,
+                serviceGroups: { include: { services: true } },
+                categories: true,
+            },
         })
     }
 

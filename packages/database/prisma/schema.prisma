@@ -111,6 +111,8 @@ model Service {
   name           String
   description    String?
   imageUrl       String?
+  duration       Int?
+  price          Int?
   serviceGroupId Int
   serviceGroup   ServiceGroup  @relation(fields: [serviceGroupId], references: [id])
   appointments   Appointment[]

@@ -34,7 +34,7 @@ export default function BusinessCard({ business }: { business: Prisma.BusinessGe
                             </StyledText>
                         </View>
                         <View className="self-start flex-row items-center">
-                            <FontAwesome name="star" size={10} color="#D2DB76" />
+                            <FontAwesome name="star" size={10} className="color-secondary" />
                             <StyledText className="font-semibold text-sm uppercase px-1">
                                 4.9
                             </StyledText>

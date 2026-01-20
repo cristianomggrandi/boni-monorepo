@@ -173,22 +173,98 @@ async function main() {
         },
     })
 
-    // ServiceCategory for the business
-    const serviceGroup = await prisma.serviceGroup.create({
-        data: {
-            name: "Serviços Gerais",
-            businessId: business.id,
+    // ServiceGroups and Services for the business
+    const serviceGroupsData = [
+        {
+            name: "Cabelo",
+            services: [
+                { name: "Corte", description: "Corte de cabelo", duration: 30, price: 5000 },
+                {
+                    name: "Coloração",
+                    description: "Tintura e coloração",
+                    duration: 60,
+                    price: null,
+                },
+                {
+                    name: "Tratamento",
+                    description: "Tratamento capilar",
+                    duration: null,
+                    price: 8000,
+                },
+            ],
         },
-    })
+        {
+            name: "Unhas",
+            services: [
+                { name: "Manicure", description: "Cuidados das mãos", duration: 45, price: 3000 },
+                { name: "Pedicure", description: "Cuidados dos pés", duration: 60, price: 4000 },
+                { name: "Nail Art", description: "Decoração de unhas", duration: 90, price: 6000 },
+            ],
+        },
+        {
+            name: "Maquiagem",
+            services: [
+                {
+                    name: "Maquiagem Social",
+                    description: "Maquiagem para eventos",
+                    duration: 60,
+                    price: 7000,
+                },
+                {
+                    name: "Maquiagem de Noiva",
+                    description: "Maquiagem para casamentos",
+                    duration: 120,
+                    price: 15000,
+                },
+                {
+                    name: "Maquiagem Artística",
+                    description: "Maquiagem criativa",
+                    duration: 90,
+                    price: 10000,
+                },
+            ],
+        },
+        {
+            name: "Estética",
+            services: [
+                { name: "Depilação", description: "Remoção de pelos", duration: 30, price: 2500 },
+                {
+                    name: "Hidratação",
+                    description: "Tratamentos hidratantes",
+                    duration: 45,
+                    price: 3500,
+                },
+                {
+                    name: "Massagem Relaxante",
+                    description: "Massagens corporais",
+                    duration: 60,
+                    price: 5000,
+                },
+            ],
+        },
+    ]
 
-    // Service
-    const service = await prisma.service.create({
-        data: {
-            name: "Corte de Cabelo",
-            description: "Corte masculino",
-            serviceGroup: { connect: { id: serviceGroup.id } },
-        },
-    })
+    let corteServiceId
+    for (const sgData of serviceGroupsData) {
+        const sg = await prisma.serviceGroup.create({
+            data: {
+                name: sgData.name,
+                businessId: business.id,
+            },
+        })
+        for (const svcData of sgData.services) {
+            const svc = await prisma.service.create({
+                data: {
+                    name: svcData.name,
+                    description: svcData.description,
+                    duration: svcData.duration,
+                    price: svcData.price,
+                    serviceGroup: { connect: { id: sg.id } },
+                },
+            })
+            if (svcData.name === "Corte") corteServiceId = svc.id
+        }
+    }
 
     // Appointment
     const appointment = await prisma.appointment.create({
@@ -198,7 +274,7 @@ async function main() {
             businessId: business.id,
             workerId: workerUser.id,
             services: {
-                connect: { id: service.id },
+                connect: { id: corteServiceId },
             },
         },
     })
@@ -211,7 +287,7 @@ async function main() {
             businessId: business.id,
             workerId: workerUser.id,
             services: {
-                connect: { id: service.id },
+                connect: { id: corteServiceId },
             },
         },
     })
@@ -223,7 +299,7 @@ async function main() {
             businessId: business.id,
             workerId: workerUser.id,
             services: {
-                connect: { id: service.id },
+                connect: { id: corteServiceId },
             },
         },
     })
@@ -235,7 +311,7 @@ async function main() {
             businessId: business.id,
             workerId: workerUser.id,
             services: {
-                connect: { id: service.id },
+                connect: { id: corteServiceId },
             },
         },
     })
@@ -247,7 +323,7 @@ async function main() {
             businessId: business.id,
             workerId: workerUser.id,
             services: {
-                connect: { id: service.id },
+                connect: { id: corteServiceId },
             },
         },
     })
