@@ -89,7 +89,7 @@ function BookingsList() {
             <FlashList
                 data={bookings.upcoming}
                 renderItem={({ item }) => <BookingCard booking={item} />}
-                keyExtractor={(item, index) => (item.id + 10 * index).toString()}
+                keyExtractor={(item, index) => (item.id + 10 * index).toString()} // TODO: Voltar ao normal
                 showsVerticalScrollIndicator={false}
                 scrollEnabled={false}
                 ListEmptyComponent={<View>{/* TODO: Criar placeholder */}</View>}
@@ -100,7 +100,7 @@ function BookingsList() {
             <FlashList
                 data={bookings.finished}
                 renderItem={({ item }) => <BookingCard booking={item} />}
-                keyExtractor={(item, index) => (item.id + 10 * index).toString()}
+                keyExtractor={(item, index) => (item.id + 10 * index).toString()} // TODO: Voltar ao normal
                 showsVerticalScrollIndicator={false}
                 scrollEnabled={false}
                 ListEmptyComponent={<View>{/* TODO: Criar placeholder */}</View>}

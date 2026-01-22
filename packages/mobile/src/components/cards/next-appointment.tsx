@@ -2,9 +2,9 @@ import api from "@/src/api/boni-api"
 import { Prisma } from "@boni/database/dist/generated/prisma/client"
 import FontAwesome from "@expo/vector-icons/FontAwesome"
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5"
-import { Link } from "expo-router"
+import { Link, useRouter } from "expo-router"
 import { use } from "react"
-import { View } from "react-native"
+import { Pressable, View } from "react-native"
 import StyledIcon from "../styled/styled-icon"
 import StyledText from "../styled/styled-text"
 
@@ -36,6 +36,7 @@ async function getNextAppointment(): Promise<Prisma.AppointmentGetPayload<{
 const nextAppointmentPromise = getNextAppointment()
 
 export default function NextAppointment() {
+    const router = useRouter()
     const nextAppointment = use(nextAppointmentPromise)
 
     if (!nextAppointment) return null
@@ -43,7 +44,7 @@ export default function NextAppointment() {
     const [day, month, time] = formatDate(nextAppointment.date.toString())
 
     return (
-        <View className="gap-2 p-2 mt-2">
+        <Pressable className="gap-2 p-2 mt-2" onPress={() => router.push("/business/1")}>
             <View className="flex-row items-center justify-between">
                 <StyledText className="font-bold text-xl">Próximo agendamento</StyledText>
                 <Link href="/bookings">
@@ -84,6 +85,6 @@ export default function NextAppointment() {
                     </View>
                 </View>
             </View>
-        </View>
+        </Pressable>
     )
 }

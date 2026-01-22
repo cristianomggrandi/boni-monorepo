@@ -90,6 +90,7 @@ model Business {
   appointments  Appointment[]
 }
 
+// TODO: Bairro?
 model Address {
   id           Int      @id @default(autoincrement())
   streetNumber String

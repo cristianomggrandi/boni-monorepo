@@ -5,7 +5,9 @@ import {
     PlusJakartaSans_700Bold,
     useFonts,
 } from "@expo-google-fonts/plus-jakarta-sans"
+import FontAwesome from "@expo/vector-icons/FontAwesome"
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons"
+import { Image } from "expo-image"
 import { Stack, useRouter, useSegments } from "expo-router"
 import * as SplashScreen from "expo-splash-screen"
 import { cssInterop } from "nativewind"
@@ -13,13 +15,23 @@ import { useEffect } from "react"
 import "../../global.css"
 import useAuthStore from "../stores/auth-store"
 
+cssInterop(Image, { className: "style" })
+
 cssInterop(MaterialCommunityIcons, {
     className: {
         target: "style",
         nativeStyleToProp: {
             color: "color",
         },
-        // nativeStyleToProp: { height: true, width: true, size: true },
+    },
+})
+
+cssInterop(FontAwesome, {
+    className: {
+        target: "style",
+        nativeStyleToProp: {
+            color: "color",
+        },
     },
 })
 
