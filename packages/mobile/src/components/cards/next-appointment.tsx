@@ -46,7 +46,7 @@ export default function NextAppointment() {
     return (
         <Pressable className="gap-2 p-2 mt-2" onPress={() => router.push("/business/1")}>
             <View className="flex-row items-center justify-between">
-                <StyledText className="font-bold text-xl">Próximo agendamento</StyledText>
+                <StyledText className="font-jakarta-bold text-xl">Próximo agendamento</StyledText>
                 <Link href="/bookings">
                     <StyledIcon>
                         <FontAwesome5 name="calendar-alt" size={20} color="black" />
@@ -59,10 +59,10 @@ export default function NextAppointment() {
                         <StyledText className="uppercase text-sm font-semibold text-gray-500 px-1">
                             {month}
                         </StyledText>
-                        <StyledText className="text-2xl font-bold">{day}</StyledText>
+                        <StyledText className="text-2xl font-jakarta-bold">{day}</StyledText>
                     </View>
                     <View className="flex-col flex-1">
-                        <StyledText className="text-lg font-bold">
+                        <StyledText className="text-lg font-jakarta-bold">
                             {nextAppointment.services[0].name}
                         </StyledText>
                         <StyledText className="text-sm">

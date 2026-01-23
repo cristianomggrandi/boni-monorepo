@@ -3,7 +3,7 @@ import Feather from "@expo/vector-icons/Feather"
 import FontAwesome from "@expo/vector-icons/FontAwesome"
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons"
 import { Image } from "expo-image"
-import { useLocalSearchParams } from "expo-router"
+import { Link, useLocalSearchParams } from "expo-router"
 import { useEffect, useRef, useState } from "react"
 import { Dimensions, FlatList, Pressable, ScrollView, View } from "react-native"
 import api from "../api/boni-api"
@@ -25,50 +25,54 @@ type ServiceType = ServiceGroupType["services"][0]
 
 function ServiceCard({ service }: { service: ServiceType }) {
     return (
-        <Pressable className="flex-row elevation-sm bg-white rounded-xl p-2 gap-2">
-            <View className="h-32 w-32 m-1 rounded">
-                <Image
-                    className="h-full w-full rounded-xl"
-                    source={
-                        // TODO: Remover fallback
-                        service.imageUrl ??
-                        "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/14/e4/3b/b5/view-from-the-top.jpg?w=500&h=500&s=1"
-                    }
-                />
-            </View>
-            <View className="flex-1 justify-between">
-                <View className="">
-                    <StyledText className="font-semibold text-lg">{service.name}</StyledText>
-                    <StyledText className="text-sm line-clamp-3">{service.description}</StyledText>
+        <Link href={`/service/${service.id}`}>
+            <View className="flex-row elevation-sm bg-white rounded-xl p-2 gap-2">
+                <View className="h-32 w-32 m-1 rounded">
+                    <Image
+                        className="h-full w-full rounded-xl"
+                        source={
+                            // TODO: Remover fallback
+                            service.imageUrl ??
+                            "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/14/e4/3b/b5/view-from-the-top.jpg?w=500&h=500&s=1"
+                        }
+                    />
                 </View>
-                <View className="flex-row justify-between">
-                    <View>
-                        {service.duration ? (
-                            <View className="flex-row items-center px-2 gap-1 opacity-65 bg-gray-200 rounded border-gray-300 border-hairlin">
-                                {/* // TODO: Com ou sem ícone */}
-                                <StyledText className="">
-                                    <MaterialCommunityIcons
-                                        name="clock"
-                                        size={14}
-                                        className="color-gray-800"
-                                    />{" "}
-                                    {formatDuration(service.duration)}
-                                </StyledText>
-                            </View>
-                        ) : null}
+                <View className="flex-1 justify-between">
+                    <View className="">
+                        <StyledText className="font-semibold text-lg">{service.name}</StyledText>
+                        <StyledText className="text-sm line-clamp-3">
+                            {service.description}
+                        </StyledText>
                     </View>
-                    <View>
-                        {service.price ? (
-                            <View className="bg-secondary rounded-full px-2 py-1">
-                                <StyledText className="font-semibold items-center justify-center leading-4">
-                                    {formatMoney(service.price)}
-                                </StyledText>
-                            </View>
-                        ) : null}
+                    <View className="flex-row justify-between">
+                        <View>
+                            {service.duration ? (
+                                <View className="flex-row items-center px-2 gap-1 opacity-65 bg-gray-200 rounded border-gray-300 border-hairlin">
+                                    {/* // TODO: Com ou sem ícone */}
+                                    <StyledText className="">
+                                        <MaterialCommunityIcons
+                                            name="clock"
+                                            size={14}
+                                            className="color-gray-800"
+                                        />{" "}
+                                        {formatDuration(service.duration)}
+                                    </StyledText>
+                                </View>
+                            ) : null}
+                        </View>
+                        <View>
+                            {service.price ? (
+                                <View className="bg-secondary rounded-full px-2 py-1">
+                                    <StyledText className="font-semibold items-center justify-center leading-4">
+                                        {formatMoney(service.price)}
+                                    </StyledText>
+                                </View>
+                            ) : null}
+                        </View>
                     </View>
                 </View>
             </View>
-        </Pressable>
+        </Link>
     )
 }
 
@@ -78,7 +82,7 @@ function ListHeader({ business }: { business: BusinessType }) {
             <View className="w-full aspect-square bg-transparent -mb-6" />
             <View className="gap-4 bg-background pt-8 rounded-t-4xl">
                 <View className="px-6">
-                    <StyledText className="text-3xl font-bold">{business.name}</StyledText>
+                    <StyledText className="text-3xl font-jakarta-bold">{business.name}</StyledText>
                     {/* TODO: Exibir categorias? */}
                     {business.address ? (
                         <StyledText className="font-semibold text-gray-500">
@@ -97,7 +101,7 @@ function ListHeader({ business }: { business: BusinessType }) {
                         </StyledText>
                         <StyledText className="text-sm text-gray-500 mt-1.5">(120)</StyledText>
                     </View>
-                    <View className="p-2 elevation-sm bg-white rounded flex-row items-center gap-2">
+                    <View className="p-2 elevation-sm bg-white rounded flex-row items-center">
                         <StyledText className="">
                             <MaterialCommunityIcons
                                 name="clock"
@@ -184,7 +188,7 @@ export default function BusinessPage() {
                         <Feather name="arrow-left" size={24} color="black" />
                     </StyledIcon>
                 </StyledIcon>
-                <StyledText className="font-bold text-2xl">{business.name}</StyledText>
+                <StyledText className="font-jakarta-bold text-2xl">{business.name}</StyledText>
                 <StyledIcon>
                     <MaterialCommunityIcons name="cards-heart" size={24} color="black" />
                     {/* TODO: Checar se favoritou ou não */}

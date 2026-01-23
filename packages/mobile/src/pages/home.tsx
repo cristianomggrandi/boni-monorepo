@@ -28,7 +28,8 @@ export default function HomePage() {
                 <View className="flex-row gap-2">
                     <StyledIcon>
                         {/* <Foundation name="heart" size={30} color="black" /> */}
-                        <MaterialCommunityIcons name="cards-heart" size={24} color="black" />
+                        {/* TODO: Cor primária ao invés de preto? */}
+                        <MaterialCommunityIcons name="cards-heart" size={24} color="primary" />
                     </StyledIcon>
                     <StyledIcon>
                         <MaterialCommunityIcons name="bell" size={24} color="black" />
@@ -38,7 +39,7 @@ export default function HomePage() {
             <View className="p-4 mb-4">
                 <View>
                     <StyledText className="uppercase text-sm font-semibold">Bom dia,</StyledText>
-                    <StyledText className="font-bold text-4xl">Nina</StyledText>
+                    <StyledText className="font-jakarta-bold text-4xl">Nina</StyledText>
                 </View>
             </View>
             <Pressable onPress={() => router.push(`/search`)} className="h-16 px-2">

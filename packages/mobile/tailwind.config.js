@@ -13,6 +13,7 @@ module.exports = {
                 sans: ["PlusJakarta"],
                 jakarta: ["PlusJakarta"],
                 bold: ["PlusJakarta-Bold"],
+                "jakarta-bold": ["PlusJakarta-Bold"],
                 semibold: ["Jakarta-SemiBold"],
                 noto: ["NotoSans"],
             },

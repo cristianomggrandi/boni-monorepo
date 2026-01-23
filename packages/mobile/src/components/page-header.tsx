@@ -17,7 +17,7 @@ export default function PageHeader(props: BottomTabHeaderProps) {
                         <Feather name="arrow-left" size={24} color="black" />
                     </StyledIcon>
                 </Pressable>
-                <StyledText className="text-xl left-1/2 -translate-x-[50%] font-bold">
+                <StyledText className="text-xl left-1/2 -translate-x-[50%] font-jakarta-bold">
                     {props.options.title}
                 </StyledText>
             </View>

@@ -16,7 +16,10 @@ export class ServiceService {
     }
 
     findOne(id: number) {
-        return this.prisma.service.findUnique({ where: { id } })
+        return this.prisma.service.findUnique({
+            where: { id },
+            include: { serviceGroup: { include: { business: true } } },
+        })
     }
 
     update(id: number, data: UpdateServiceDto) {
