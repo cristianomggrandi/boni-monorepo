@@ -8,7 +8,7 @@ import {
     UnauthorizedException,
 } from "@nestjs/common"
 import { Reflector } from "@nestjs/core"
-import { JwtService } from "@nestjs/jwt"
+import { JwtService, TokenExpiredError } from "@nestjs/jwt"
 import { Request } from "express"
 import { UserJWTPayload } from "./types"
 
@@ -48,7 +48,11 @@ export class AuthGuard implements CanActivate {
             })
 
             request["user"] = payload
-        } catch {
+        } catch (error) {
+            if (error instanceof TokenExpiredError) {
+                throw new UnauthorizedException("Access token expired")
+            }
+
             throw new UnauthorizedException()
         }
 

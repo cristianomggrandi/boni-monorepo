@@ -26,6 +26,8 @@ async function getNextAppointment(): Promise<Prisma.AppointmentGetPayload<{
     try {
         const response = await api.get("appointments/next")
 
+        console.log("RESPONSE NEXT APPOINTMENT:", response)
+
         return response.data
     } catch (error) {
         console.error("APPOINTMENT ERROR:", error)

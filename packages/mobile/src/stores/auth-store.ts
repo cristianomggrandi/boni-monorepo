@@ -18,6 +18,7 @@ interface IAuthStore {
 }
 
 export const JWT_KEY = "boni_jwt_token"
+export const REFRESH_TOKEN_KEY = "boni_refresh_token"
 
 const useAuthStore = create<IAuthStore>((set, get) => ({
     isLoggedIn: false,
@@ -25,9 +26,10 @@ const useAuthStore = create<IAuthStore>((set, get) => ({
     register: async (data: ILoginData) => {
         api.post("/auth/signup", data)
             .then(async response => {
-                set({ token: response.data, isLoggedIn: true })
+                set({ token: response.data.accessToken, isLoggedIn: true })
 
-                await SecureStore.setItemAsync(JWT_KEY, response.data)
+                await SecureStore.setItemAsync(JWT_KEY, response.data.accessToken)
+                await SecureStore.setItemAsync(REFRESH_TOKEN_KEY, response.data.refreshToken)
 
                 router.replace("/(tabs)")
             })
@@ -38,9 +40,10 @@ const useAuthStore = create<IAuthStore>((set, get) => ({
     login: async data => {
         api.post("/auth/login", data)
             .then(async response => {
-                set({ token: response.data, isLoggedIn: true })
+                set({ token: response.data.accessToken, isLoggedIn: true })
 
-                await SecureStore.setItemAsync(JWT_KEY, response.data)
+                await SecureStore.setItemAsync(JWT_KEY, response.data.accessToken)
+                await SecureStore.setItemAsync(REFRESH_TOKEN_KEY, response.data.refreshToken)
 
                 router.replace("/(tabs)")
             })
@@ -51,9 +54,8 @@ const useAuthStore = create<IAuthStore>((set, get) => ({
     logout: async () => {
         set({ token: null, isLoggedIn: false })
 
-        // TODO: router.replace("/(auth)") ????
-
         await SecureStore.deleteItemAsync(JWT_KEY)
+        await SecureStore.deleteItemAsync(REFRESH_TOKEN_KEY)
     },
     initialize: async () => {
         const token = await SecureStore.getItemAsync(JWT_KEY)

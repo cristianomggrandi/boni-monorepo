@@ -4,6 +4,7 @@ import { RegisterUserDto } from "../users/dto/register-user.dto"
 import { Public } from "./auth.guard"
 import { AuthService } from "./auth.service"
 import { LoginUserDto } from "./dto/login-user.dto"
+import { RefreshDto } from "./dto/refresh.dto"
 
 @Controller("auth")
 export class AuthController {
@@ -38,6 +39,14 @@ export class AuthController {
         //     maxAge: 3600000, // Cookie expiration time (e.g., 1 hour in milliseconds)
         //     path: "/",
         // })
+
+        return jwt
+    }
+
+    @Public()
+    @Post("refresh")
+    async refresh(@Body() data: RefreshDto) {
+        const jwt = await this.authService.refresh(data.refreshToken)
 
         return jwt
     }
