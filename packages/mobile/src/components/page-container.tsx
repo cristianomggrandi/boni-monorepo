@@ -14,7 +14,8 @@ export default function PageContainer({
     return (
         <SafeAreaView
             edges={
-                enableSafeSpace ? ["top", "left", "right", "bottom"] : ["left", "right", "bottom"]
+                props.edges ??
+                (enableSafeSpace ? ["top", "left", "right", "bottom"] : ["left", "right", "bottom"])
             }
             className={cn("flex-1 flex-col bg-background px-2 gap-2", className)}
             {...props}

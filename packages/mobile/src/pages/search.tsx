@@ -183,7 +183,7 @@ export default function Search() {
     }, [filters])
 
     return (
-        <PageContainer enableSafeSpace>
+        <PageContainer edges={["top", "left", "right"]}>
             <SearchHeader scrollY={scrollY} />
             <Animated.ScrollView onScroll={scrollHandler} scrollEventThrottle={16}>
                 {/* TODO: Checar se quero px-6 ou p-6 ou (px-6 + py-4) */}
