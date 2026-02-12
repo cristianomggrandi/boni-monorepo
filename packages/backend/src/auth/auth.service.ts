@@ -7,8 +7,8 @@ import { AuthResponseDto } from "./dto/auth-response.dto"
 import { LoginUserDto } from "./dto/login-user.dto"
 import { JWT, UserJWTPayload } from "./types"
 
-const ACCESS_TOKEN_EXPIRATION = "1m"
-const REFRESH_TOKEN_EXPIRATION = "1m"
+const ACCESS_TOKEN_EXPIRATION = "15m"
+const REFRESH_TOKEN_EXPIRATION = "7d"
 
 @Injectable()
 export class AuthService {

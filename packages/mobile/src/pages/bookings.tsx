@@ -5,11 +5,9 @@ import { Button, ScrollView, Text, View } from "react-native"
 import api from "../api/boni-api"
 import PageContainer from "../components/page-container"
 import StyledText from "../components/styled/styled-text"
+import useUserDependentPromise from "../hooks/use-user-dependent-promise"
 
 type Booking = Prisma.AppointmentGetPayload<{ include: { business: true; services: true } }>
-
-// TODO: Possibilitar importar de backend
-// type Booking = ReturnType<AppointmentService.findAll>
 
 async function getBookings(): Promise<{
     upcoming: Array<Booking>
@@ -24,8 +22,6 @@ async function getBookings(): Promise<{
         return { upcoming: [], finished: [] }
     }
 }
-
-const getBookingsPromise = getBookings()
 
 const meses = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"]
 
@@ -76,6 +72,8 @@ function BookingCard({ booking }: { booking: Booking }) {
 }
 
 function BookingsList() {
+    const getBookingsPromise = useUserDependentPromise(getBookings)
+
     const bookings = use(getBookingsPromise)
 
     // TODO:

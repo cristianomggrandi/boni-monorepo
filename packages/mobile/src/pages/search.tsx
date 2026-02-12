@@ -1,4 +1,4 @@
-import { Business, Category } from "@boni/database/dist/generated/prisma/client"
+import { Business, BusinessCategory, Prisma } from "@boni/database/dist/generated/prisma/client"
 import Feather from "@expo/vector-icons/Feather"
 import Ionicons from "@expo/vector-icons/Ionicons"
 import { FlashList } from "@shopify/flash-list"
@@ -20,10 +20,15 @@ import PageContainer from "../components/page-container"
 import SearchBar from "../components/search-bar"
 import StyledIcon from "../components/styled/styled-icon"
 import StyledText from "../components/styled/styled-text"
+import useUserDependentPromise from "../hooks/use-user-dependent-promise"
 
 type Filters = Record<string, string>
 
-async function getCategories() {
+type CategoryWithSubcategories = Prisma.BusinessCategoryGetPayload<{
+    include: { subcategories: true }
+}>
+
+async function getCategories(): Promise<CategoryWithSubcategories[]> {
     try {
         const response = await api.get("categories")
 
@@ -33,8 +38,6 @@ async function getCategories() {
         return []
     }
 }
-
-const getCategoriesPromise = getCategories()
 
 async function getBusinesses(filters: Filters): Promise<Business[]> {
     try {
@@ -125,8 +128,9 @@ export default function Search() {
         },
     })
 
+    const getCategoriesPromise = useUserDependentPromise(getCategories)
     const categories = use(getCategoriesPromise)
-    const [selectedCategory, setSelectedCategory] = useState<Category>()
+    const [selectedCategory, setSelectedCategory] = useState<BusinessCategory>()
 
     const [filters, setFilters] = useState<Filters>({})
     const addFilter = (k: string, v: string) => setFilters(prev => ({ ...prev, [k]: v }))
@@ -139,8 +143,8 @@ export default function Search() {
     const [businessList, setBusinessList] = useState<Business[]>([])
     const [loadingBusinesses, setLoadingBusinesses] = useState(true)
 
-    const [subCategories, setSubCategories] = useState<Category[]>([])
-    const [selectedSubCategory, setSelectedSubCategory] = useState<Category>()
+    const [subCategories, setSubCategories] = useState<BusinessCategory[]>([])
+    const [selectedSubCategory, setSelectedSubCategory] = useState<BusinessCategory>()
 
     useLayoutEffect(() => {
         if (selectedCategory) {
@@ -184,14 +188,14 @@ export default function Search() {
             <Animated.ScrollView onScroll={scrollHandler} scrollEventThrottle={16}>
                 {/* TODO: Checar se quero px-6 ou p-6 ou (px-6 + py-4) */}
                 <CategoryList
-                    categories={categories}
+                    categories={categories as BusinessCategory[]}
                     setSelectedCategory={setSelectedCategory}
                     selectedCategory={selectedCategory}
                 />
                 {/* TODO: Criar Skeleton para carregar subcategories (JQuery? ReactQuery?, React hook use?) */}
                 {/* Acho que vai ser bom usar o useTransition */}
                 <CategoryList
-                    categories={subCategories}
+                    categories={subCategories as BusinessCategory[]}
                     setSelectedCategory={setSelectedSubCategory}
                     selectedCategory={selectedSubCategory}
                     size="small"

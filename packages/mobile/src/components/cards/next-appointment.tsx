@@ -1,4 +1,5 @@
 import api from "@/src/api/boni-api"
+import useUserDependentPromise from "@/src/hooks/use-user-dependent-promise"
 import { Prisma } from "@boni/database/dist/generated/prisma/client"
 import FontAwesome from "@expo/vector-icons/FontAwesome"
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5"
@@ -33,10 +34,10 @@ async function getNextAppointment(): Promise<Prisma.AppointmentGetPayload<{
     }
 }
 
-const nextAppointmentPromise = getNextAppointment()
-
 export default function NextAppointment() {
     const router = useRouter()
+
+    const nextAppointmentPromise = useUserDependentPromise(getNextAppointment)
     const nextAppointment = use(nextAppointmentPromise)
 
     if (!nextAppointment) return null
