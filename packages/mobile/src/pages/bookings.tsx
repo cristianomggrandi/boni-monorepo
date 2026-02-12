@@ -15,9 +15,14 @@ async function getBookings(): Promise<{
     upcoming: Array<Booking>
     finished: Array<Booking>
 } | null> {
-    const response = await api.get("appointments")
+    try {
+        const response = await api.get("appointments")
 
-    return response.data
+        return response.data
+    } catch (error) {
+        console.error("BOOKINGS ERROR:", error)
+        return { upcoming: [], finished: [] }
+    }
 }
 
 const getBookingsPromise = getBookings()

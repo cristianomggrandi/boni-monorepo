@@ -9,7 +9,7 @@ export interface UserJWTPayload {
     //   birthday: null,
 }
 
-export type FullJWT<T> = T & {
+export type JWT<T> = T & {
     sub: number
     iat: number
     exp: number

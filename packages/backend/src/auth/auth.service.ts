@@ -5,7 +5,10 @@ import { RegisterUserDto } from "../users/dto/register-user.dto"
 import { getUserPublicInfo } from "../users/helpers"
 import { AuthResponseDto } from "./dto/auth-response.dto"
 import { LoginUserDto } from "./dto/login-user.dto"
-import { FullJWT, UserJWTPayload } from "./types"
+import { JWT, UserJWTPayload } from "./types"
+
+const ACCESS_TOKEN_EXPIRATION = "1m"
+const REFRESH_TOKEN_EXPIRATION = "1m"
 
 @Injectable()
 export class AuthService {
@@ -16,11 +19,13 @@ export class AuthService {
 
     private async generateTokens(payload: UserJWTPayload): Promise<AuthResponseDto> {
         const accessToken = await this.jwtService.signAsync(payload, {
-            expiresIn: "1m",
+            expiresIn: ACCESS_TOKEN_EXPIRATION,
         })
+
         const refreshToken = await this.jwtService.signAsync(payload, {
-            expiresIn: "7d",
+            expiresIn: REFRESH_TOKEN_EXPIRATION,
         })
+
         return { accessToken, refreshToken }
     }
 
@@ -53,20 +58,14 @@ export class AuthService {
 
     async refresh(refreshToken: string): Promise<string> {
         try {
-            console.log("REFRESH TESTE", refreshToken)
-
-            const { exp, iat, createdAt, updatedAt, ...payload }: FullJWT<UserJWTPayload> =
+            const { exp, iat, createdAt, updatedAt, ...payload }: JWT<UserJWTPayload> =
                 await this.jwtService.verifyAsync(refreshToken, {
                     secret: process.env.JWT_SECRET,
                 })
 
-            console.log("REFRESH TESTE Payload", payload)
-
             const newAccessToken = await this.jwtService.signAsync(payload, {
-                expiresIn: "1m",
+                expiresIn: ACCESS_TOKEN_EXPIRATION,
             })
-
-            console.log("REFRESH - New access token generated:", newAccessToken)
 
             return newAccessToken
         } catch (error) {

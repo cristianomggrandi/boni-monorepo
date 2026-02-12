@@ -1,5 +1,4 @@
 import axios from "axios"
-import { router } from "expo-router"
 import * as SecureStore from "expo-secure-store"
 import { JWT_KEY, REFRESH_TOKEN_KEY } from "../stores/auth-store"
 
@@ -87,9 +86,9 @@ api.interceptors.response.use(
                 await SecureStore.deleteItemAsync(JWT_KEY)
                 await SecureStore.deleteItemAsync(REFRESH_TOKEN_KEY)
 
-                try {
-                    router.navigate("/login")
-                } catch {}
+                // try {
+                //     router.navigate("/login")
+                // } catch {}
 
                 return Promise.reject(refreshError)
             } finally {
@@ -97,9 +96,9 @@ api.interceptors.response.use(
             }
         }
 
-        try {
-            router.navigate("/login")
-        } catch {}
+        // try {
+        //     router.navigate("/login")
+        // } catch {}
 
         return Promise.reject(error)
     }
