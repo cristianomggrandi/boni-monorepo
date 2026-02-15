@@ -1,5 +1,6 @@
 import { ConflictException, Injectable, UnauthorizedException } from "@nestjs/common"
 import { JwtService, TokenExpiredError } from "@nestjs/jwt"
+import { Request } from "express"
 import { PrismaService } from "../prisma/prisma.service"
 import { RegisterUserDto } from "../users/dto/register-user.dto"
 import { getUserPublicInfo } from "../users/helpers"
@@ -37,18 +38,26 @@ export class AuthService {
         if (!user || user.password !== data.password)
             throw new UnauthorizedException("Invalid credentials")
 
-        const payload: UserJWTPayload = { sub: user.id, ...getUserPublicInfo(user) }
+        const publicUserInfo = getUserPublicInfo(user)
 
-        return this.generateTokens(payload)
+        const payload: UserJWTPayload = { sub: user.id, ...publicUserInfo }
+
+        const tokens = await this.generateTokens(payload)
+
+        return { ...tokens, user: publicUserInfo }
     }
 
     async signup(data: RegisterUserDto) {
         try {
             const user = await this.prisma.user.create({ data })
 
-            const payload: UserJWTPayload = { sub: user.id, ...getUserPublicInfo(user) }
+            const publicUserInfo = getUserPublicInfo(user)
 
-            return this.generateTokens(payload)
+            const payload: UserJWTPayload = { sub: user.id, ...publicUserInfo }
+
+            const tokens = await this.generateTokens(payload)
+
+            return { ...tokens, user: publicUserInfo }
         } catch (error) {
             if (error.code === "P2002") throw new ConflictException("User already exists")
 
@@ -56,7 +65,7 @@ export class AuthService {
         }
     }
 
-    async refresh(refreshToken: string): Promise<string> {
+    async refresh(refreshToken: string) {
         try {
             const { exp, iat, createdAt, updatedAt, ...payload }: JWT<UserJWTPayload> =
                 await this.jwtService.verifyAsync(refreshToken, {
@@ -67,7 +76,9 @@ export class AuthService {
                 expiresIn: ACCESS_TOKEN_EXPIRATION,
             })
 
-            return newAccessToken
+            const publicUserInfo = getUserPublicInfo(payload as any)
+
+            return { token: newAccessToken, user: publicUserInfo }
         } catch (error) {
             console.error("ERROR REFRESH", error)
             if (error instanceof TokenExpiredError) {
@@ -76,5 +87,11 @@ export class AuthService {
 
             throw new UnauthorizedException("Invalid refresh token")
         }
+    }
+
+    async getUserByToken(request: Request) {
+        const user = request.user as UserJWTPayload
+
+        return user
     }
 }

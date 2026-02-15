@@ -7,9 +7,11 @@ import PageContainer from "../components/page-container"
 import SearchBar from "../components/search-bar"
 import StyledIcon from "../components/styled/styled-icon"
 import StyledText from "../components/styled/styled-text"
+import useAuthStore from "../stores/auth-store"
 
 export default function HomePage() {
     const router = useRouter()
+    const user = useAuthStore(s => s.user)
 
     return (
         <PageContainer enableSafeSpace className="gap-2">
@@ -38,8 +40,14 @@ export default function HomePage() {
             </View>
             <View className="p-4 mb-4">
                 <View>
-                    <StyledText className="uppercase text-sm font-semibold">Bom dia,</StyledText>
-                    <StyledText className="font-jakarta-bold text-4xl">Nina</StyledText>
+                    <StyledText className="uppercase text-sm font-semibold">
+                        Bom dia{user ? "," : ""}
+                    </StyledText>
+                    {user ? (
+                        <StyledText className="font-jakarta-bold text-4xl">
+                            {user.name.split(" ")[0]}
+                        </StyledText>
+                    ) : null}
                 </View>
             </View>
             <Pressable onPress={() => router.push(`/search`)} className="h-16 px-2">

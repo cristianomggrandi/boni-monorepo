@@ -70,9 +70,9 @@ api.interceptors.response.use(
 
                 const response = await api.post("/auth/refresh", { refreshToken })
 
-                console.log("New Access Token", response.data)
+                console.log("New Access Token", response.data.token)
 
-                const accessToken = response.data
+                const accessToken = response.data.token
 
                 await SecureStore.setItemAsync(JWT_KEY, accessToken)
 

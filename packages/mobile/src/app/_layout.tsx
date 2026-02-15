@@ -5,6 +5,7 @@ import {
     PlusJakartaSans_700Bold,
     useFonts,
 } from "@expo-google-fonts/plus-jakarta-sans"
+import Entypo from "@expo/vector-icons/Entypo"
 import FontAwesome from "@expo/vector-icons/FontAwesome"
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons"
 import { Image } from "expo-image"
@@ -27,6 +28,15 @@ cssInterop(MaterialCommunityIcons, {
 })
 
 cssInterop(FontAwesome, {
+    className: {
+        target: "style",
+        nativeStyleToProp: {
+            color: "color",
+        },
+    },
+})
+
+cssInterop(Entypo, {
     className: {
         target: "style",
         nativeStyleToProp: {

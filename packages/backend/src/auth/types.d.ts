@@ -16,3 +16,13 @@ export type JWT<T> = T & {
     createdAt: string
     updatedAt: string
 }
+
+declare global {
+    namespace Express {
+        interface Request {
+            user?: UserJWTPayload
+        }
+    }
+}
+
+export {}
