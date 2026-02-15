@@ -36,7 +36,7 @@ export default function ServicePage() {
     const business = service.serviceGroup.business
 
     return (
-        <PageContainer enableSafeSpace className="p-0 h-full">
+        <PageContainer edges={["right", "left", "bottom", "top"]} className="p-0 h-full">
             <View className="w-full flex-row items-center justify-between px-4">
                 <StyledIcon>
                     <StyledIcon>

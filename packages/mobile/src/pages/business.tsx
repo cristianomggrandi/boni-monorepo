@@ -153,6 +153,8 @@ function ServiceGroupSelector({
 
 const WINDOW_WIDTH = Dimensions.get("window").width
 
+// TODO: Decidir se coloca ou não dentro de Search para que tenha a TabBar ou se deixa sem (do jeito que está)
+
 export default function BusinessPage() {
     const { id } = useLocalSearchParams()
 
@@ -160,28 +162,20 @@ export default function BusinessPage() {
 
     const [selectedGroup, setSelectedGroup] = useState<ServiceGroupType["id"]>()
 
+    // TODO: use() hook?
     useEffect(() => {
         api.get("business/" + id)
-            .then(res => {
-                console.log("BUSINESS:", res.data)
-                setBusiness(res.data)
-            })
+            .then(res => setBusiness(res.data))
             .catch(error => console.error(error))
     }, [])
 
     const listRef = useRef<FlatList<BusinessType["serviceGroups"][0]>>(null)
 
-    // TODO: PRÓXIMO:
-    // Criar array de refs para cada categoria e fazer scroll até ele usando measure:
-    // targetRef.current?.measure((x, y, width, height, pageX, pageY) => {
-    //   //do something with the measurements
-    // });
-
     // TODO:
     if (!business) return null
 
     return (
-        <PageContainer enableSafeSpace className="gap-2 px-0">
+        <PageContainer edges={["top", "left", "right", "bottom"]} className="gap-2 px-0">
             <View className="w-full flex-row items-center justify-between px-4">
                 <StyledIcon>
                     <StyledIcon>
