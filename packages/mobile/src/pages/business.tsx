@@ -7,9 +7,11 @@ import { Link, useLocalSearchParams } from "expo-router"
 import { useEffect, useRef, useState } from "react"
 import { Dimensions, FlatList, Pressable, ScrollView, View } from "react-native"
 import api from "../api/boni-api"
+import FavoriteIcon from "../components/favorite-icon"
 import PageContainer from "../components/page-container"
 import StyledIcon from "../components/styled/styled-icon"
 import StyledText from "../components/styled/styled-text"
+import useFavoritesStore from "../stores/favorites-store"
 import { formatDuration, formatMoney } from "../util/formatting"
 
 type BusinessType = Prisma.BusinessGetPayload<{
@@ -160,6 +162,34 @@ export default function BusinessPage() {
 
     const [business, setBusiness] = useState<BusinessType>()
 
+    const favoriteBusinesses = useFavoritesStore(state => state.getFavoriteBusinesses())
+    const addFavoriteBusiness = useFavoritesStore(state => state.addFavoriteBusiness)
+    const removeFavoriteBusiness = useFavoritesStore(state => state.removeFavoriteBusiness)
+
+    const [isFavorite, setIsFavorite] = useState(favoriteBusinesses.includes(Number(id)))
+
+    const handleFavoriteToggle = async () => {
+        const newIsFavorite = !isFavorite
+        setIsFavorite(newIsFavorite)
+
+        try {
+            if (newIsFavorite) {
+                await api.post("/favorite-businesses/" + id)
+                addFavoriteBusiness(+id)
+            } else {
+                await api.delete("/favorite-businesses/" + id)
+                removeFavoriteBusiness(+id)
+            }
+        } catch (error) {
+            console.error("Failed to toggle favorite:", error)
+            setIsFavorite(!newIsFavorite)
+        }
+    }
+
+    useEffect(() => {
+        setIsFavorite(favoriteBusinesses.includes(Number(id)))
+    }, [favoriteBusinesses])
+
     const [selectedGroup, setSelectedGroup] = useState<ServiceGroupType["id"]>()
 
     // TODO: use() hook?
@@ -183,11 +213,7 @@ export default function BusinessPage() {
                     </StyledIcon>
                 </StyledIcon>
                 <StyledText className="font-jakarta-bold text-2xl">{business.name}</StyledText>
-                <StyledIcon>
-                    <MaterialCommunityIcons name="cards-heart" size={24} color="black" />
-                    {/* TODO: Checar se favoritou ou não */}
-                    {/* <MaterialCommunityIcons name="cards-heart-outline" size={24} color="black" /> */}
-                </StyledIcon>
+                <FavoriteIcon isFavorite={isFavorite} handleFavoriteToggle={handleFavoriteToggle} />
             </View>
             <View className="relative">
                 <View className="absolute">

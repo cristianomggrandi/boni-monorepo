@@ -8,9 +8,11 @@ import { useLocalSearchParams } from "expo-router"
 import { useEffect, useState } from "react"
 import { Pressable, ScrollView, View } from "react-native"
 import api from "../api/boni-api"
+import FavoriteIcon from "../components/favorite-icon"
 import PageContainer from "../components/page-container"
 import StyledIcon from "../components/styled/styled-icon"
 import StyledText from "../components/styled/styled-text"
+import useFavoritesStore from "../stores/favorites-store"
 import { formatDuration, formatMoney } from "../util/formatting"
 
 type ServiceType = Prisma.ServiceGetPayload<{
@@ -21,6 +23,34 @@ export default function ServicePage() {
     const { id } = useLocalSearchParams()
 
     const [service, setService] = useState<ServiceType>()
+
+    const favoriteServices = useFavoritesStore(state => state.getFavoriteServices())
+    const addFavoriteService = useFavoritesStore(state => state.addFavoriteService)
+    const removeFavoriteService = useFavoritesStore(state => state.removeFavoriteService)
+
+    const [isFavorite, setIsFavorite] = useState(favoriteServices.includes(Number(id)))
+
+    const handleFavoriteToggle = async () => {
+        const newIsFavorite = !isFavorite
+        setIsFavorite(newIsFavorite)
+
+        try {
+            if (newIsFavorite) {
+                await api.post("/favorite-services/" + id)
+                addFavoriteService(+id)
+            } else {
+                await api.delete("/favorite-services/" + id)
+                removeFavoriteService(+id)
+            }
+        } catch (error) {
+            console.error("Failed to toggle favorite:", error)
+            setIsFavorite(!newIsFavorite)
+        }
+    }
+
+    useEffect(() => {
+        setIsFavorite(favoriteServices.includes(Number(id)))
+    }, [favoriteServices])
 
     useEffect(() => {
         api.get("service/" + id)
@@ -44,11 +74,7 @@ export default function ServicePage() {
                     </StyledIcon>
                 </StyledIcon>
                 <StyledText className="font-jakarta-bold text-2xl">{service.name}</StyledText>
-                <StyledIcon>
-                    <MaterialCommunityIcons name="cards-heart" size={24} color="black" />
-                    {/* TODO: Checar se favoritou ou não */}
-                    {/* <MaterialCommunityIcons name="cards-heart-outline" size={24} color="black" /> */}
-                </StyledIcon>
+                <FavoriteIcon isFavorite={isFavorite} handleFavoriteToggle={handleFavoriteToggle} />
             </View>
             <View className="relative flex-1">
                 <View className="absolute">
