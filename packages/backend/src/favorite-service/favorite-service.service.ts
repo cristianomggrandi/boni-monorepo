@@ -21,18 +21,7 @@ export class FavoriteServiceService {
 
         if (!res) return []
 
-        return res.favoriteServices.map(s => s.id)
-    }
-
-    async findOne(user: UserJWTPayload, id: number) {
-        const res = await this.prisma.user.findUnique({
-            where: { id: user.sub },
-            select: { favoriteServices: { where: { id }, select: { id: true } } },
-        })
-
-        if (!res || !res.favoriteServices) return false
-
-        return res.favoriteServices.length > 0
+        return res.favoriteServices
     }
 
     remove(user: UserJWTPayload, id: number) {

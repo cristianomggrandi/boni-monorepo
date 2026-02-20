@@ -24,11 +24,11 @@ export default function ServicePage() {
 
     const [service, setService] = useState<ServiceType>()
 
-    const favoriteServices = useFavoritesStore(state => state.getFavoriteServices())
+    const favoriteServiceIds = useFavoritesStore(state => state.getFavoriteServiceIds())
     const addFavoriteService = useFavoritesStore(state => state.addFavoriteService)
     const removeFavoriteService = useFavoritesStore(state => state.removeFavoriteService)
 
-    const [isFavorite, setIsFavorite] = useState(favoriteServices.includes(Number(id)))
+    const [isFavorite, setIsFavorite] = useState(favoriteServiceIds.includes(Number(id)))
 
     const handleFavoriteToggle = async () => {
         const newIsFavorite = !isFavorite
@@ -49,8 +49,8 @@ export default function ServicePage() {
     }
 
     useEffect(() => {
-        setIsFavorite(favoriteServices.includes(Number(id)))
-    }, [favoriteServices])
+        setIsFavorite(favoriteServiceIds.includes(Number(id)))
+    }, [favoriteServiceIds])
 
     useEffect(() => {
         api.get("service/" + id)

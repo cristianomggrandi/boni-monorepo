@@ -17,11 +17,6 @@ export class FavoriteServiceController {
         return this.favoriteServiceService.findAll(user)
     }
 
-    @Get(":id")
-    findOne(@User() user: UserJWTPayload, @Param("id") id: string) {
-        return this.favoriteServiceService.findOne(user, +id)
-    }
-
     @Delete(":id")
     remove(@User() user: UserJWTPayload, @Param("id") id: string) {
         return this.favoriteServiceService.remove(user, +id)

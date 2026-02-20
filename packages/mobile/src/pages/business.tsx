@@ -162,12 +162,11 @@ export default function BusinessPage() {
 
     const [business, setBusiness] = useState<BusinessType>()
 
-    const favoriteBusinesses = useFavoritesStore(state => state.getFavoriteBusinesses())
+    const favoriteBusinessIds = useFavoritesStore(state => state.getFavoriteBusinessIds())
     const addFavoriteBusiness = useFavoritesStore(state => state.addFavoriteBusiness)
     const removeFavoriteBusiness = useFavoritesStore(state => state.removeFavoriteBusiness)
 
-    const [isFavorite, setIsFavorite] = useState(favoriteBusinesses.includes(Number(id)))
-
+    const [isFavorite, setIsFavorite] = useState(favoriteBusinessIds.includes(Number(id)))
     const handleFavoriteToggle = async () => {
         const newIsFavorite = !isFavorite
         setIsFavorite(newIsFavorite)
@@ -187,8 +186,8 @@ export default function BusinessPage() {
     }
 
     useEffect(() => {
-        setIsFavorite(favoriteBusinesses.includes(Number(id)))
-    }, [favoriteBusinesses])
+        setIsFavorite(favoriteBusinessIds.includes(Number(id)))
+    }, [favoriteBusinessIds])
 
     const [selectedGroup, setSelectedGroup] = useState<ServiceGroupType["id"]>()
 

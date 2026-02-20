@@ -17,23 +17,12 @@ export class FavoriteBusinessService {
     async findAll(user: UserJWTPayload) {
         const res = await this.prisma.user.findUnique({
             where: { id: user.sub },
-            select: { favoriteBusinesses: { select: { id: true } } },
+            include: { favoriteBusinesses: true },
         })
 
         if (!res) return []
 
-        return res.favoriteBusinesses.map(b => b.id)
-    }
-
-    async findOne(user: UserJWTPayload, id: number) {
-        const res = await this.prisma.user.findUnique({
-            where: { id: user.sub },
-            select: { favoriteBusinesses: { where: { id }, select: { id: true } } },
-        })
-
-        if (!res || !res.favoriteBusinesses) return false
-
-        return res.favoriteBusinesses.length > 0
+        return res.favoriteBusinesses
     }
 
     async remove(user: UserJWTPayload, id: number) {

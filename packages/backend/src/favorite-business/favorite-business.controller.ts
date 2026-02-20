@@ -17,11 +17,6 @@ export class FavoriteBusinessController {
         return this.favoriteBusinessService.findAll(user)
     }
 
-    @Get(":id")
-    findOne(@User() user: UserJWTPayload, @Param("id") id: string) {
-        return this.favoriteBusinessService.findOne(user, +id)
-    }
-
     @Delete(":id")
     remove(@User() user: UserJWTPayload, @Param("id") id: string) {
         return this.favoriteBusinessService.remove(user, +id)

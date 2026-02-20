@@ -8,6 +8,8 @@ import StyledText from "../styled/styled-text"
 export default function BusinessCard({ business }: { business: Prisma.BusinessGetPayload<{}> }) {
     const router = useRouter()
 
+    console.log("BUSINESS CARD RENDER:", business)
+
     return (
         <Pressable
             onPress={() => router.push({ pathname: "/business/[id]", params: { id: business.id } })}

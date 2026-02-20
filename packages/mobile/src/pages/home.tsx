@@ -28,11 +28,11 @@ export default function HomePage() {
                     </Link>
                 </View>
                 <View className="flex-row gap-2">
-                    <StyledIcon>
-                        {/* <Foundation name="heart" size={30} color="black" /> */}
-                        {/* TODO: Cor primária ao invés de preto? */}
-                        <MaterialCommunityIcons name="cards-heart" size={24} color="primary" />
-                    </StyledIcon>
+                    <Link href="/favorites">
+                        <StyledIcon>
+                            <MaterialCommunityIcons name="cards-heart" size={24} color="primary" />
+                        </StyledIcon>
+                    </Link>
                     <StyledIcon>
                         <MaterialCommunityIcons name="bell" size={24} color="black" />
                     </StyledIcon>

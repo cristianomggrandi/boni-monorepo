@@ -52,7 +52,7 @@ async function getBusinesses(filters: Filters): Promise<Business[]> {
     }
 }
 
-function BusinessList({ list, isLoading }: { list: Business[]; isLoading: boolean }) {
+export function BusinessList({ list, isLoading }: { list: Business[]; isLoading: boolean }) {
     return (
         <View className="flex-1">
             <View className="flex-row items-center justify-between p-2">
