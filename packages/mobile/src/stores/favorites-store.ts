@@ -12,11 +12,12 @@ interface IFavoritesStore {
     getFavoriteServices: () => Service[]
     getFavoriteServiceIds: () => number[]
     fetchedFavorites: boolean
+    isLoadingFavorites: boolean
     fetchFavorites: () => void
-    addFavoriteBusiness: (businessId: number) => void
-    removeFavoriteBusiness: (businessId: number) => void
-    addFavoriteService: (serviceId: number) => void
-    removeFavoriteService: (serviceId: number) => void
+    addFavoriteBusiness: (business: Business) => void
+    removeFavoriteBusiness: (business: Business) => void
+    addFavoriteService: (service: Service) => void
+    removeFavoriteService: (service: Service) => void
 }
 
 export const JWT_KEY = "boni_jwt_token"
@@ -60,15 +61,17 @@ const useFavoritesStore = create<IFavoritesStore>((set, get) => ({
         return get().favoriteServiceIds
     },
     fetchedFavorites: false,
+    isLoadingFavorites: false,
     fetchFavorites: async () => {
-        if (get().fetchedFavorites) return
+        if (get().fetchedFavorites || get().isLoadingFavorites) return
 
-        set({ fetchedFavorites: true })
+        set({ isLoadingFavorites: true })
 
         try {
             const [businessResponse, serviceResponse] = await Promise.all([
                 api.get("/favorite-businesses"),
                 api.get("/favorite-services"),
+                // Promise.resolve(new Promise(resolve => setTimeout(resolve, 3000))),
             ])
 
             set({
@@ -76,30 +79,36 @@ const useFavoritesStore = create<IFavoritesStore>((set, get) => ({
                 favoriteBusinessIds: businessResponse.data.map((b: any) => b.id),
                 favoriteServices: serviceResponse.data,
                 favoriteServiceIds: serviceResponse.data.map((s: any) => s.id),
+                fetchedFavorites: true,
+                isLoadingFavorites: false,
             })
         } catch (error) {
             console.error("Failed to fetch favorites:", error)
-            set({ fetchedFavorites: false })
+            set({ fetchedFavorites: false, isLoadingFavorites: false })
         }
     },
-    addFavoriteBusiness: (businessId: number) => {
+    addFavoriteBusiness: (business: Business) => {
         set(state => ({
-            favoriteBusinesses: [...state.favoriteBusinesses, businessId],
+            favoriteBusinesses: [...state.favoriteBusinesses, business],
+            favoriteBusinessIds: [...state.favoriteBusinessIds, business.id],
         }))
     },
-    removeFavoriteBusiness: (businessId: number) => {
+    removeFavoriteBusiness: (business: Business) => {
         set(state => ({
-            favoriteBusinesses: state.favoriteBusinesses.filter(id => id !== businessId),
+            favoriteBusinesses: state.favoriteBusinesses.filter(b => b.id !== business.id),
+            favoriteBusinessIds: state.favoriteBusinessIds.filter(id => id !== business.id),
         }))
     },
-    addFavoriteService: (serviceId: number) => {
+    addFavoriteService: (service: Service) => {
         set(state => ({
-            favoriteServices: [...state.favoriteServices, serviceId],
+            favoriteServices: [...state.favoriteServices, service],
+            favoriteServiceIds: [...state.favoriteServiceIds, service.id],
         }))
     },
-    removeFavoriteService: (serviceId: number) => {
+    removeFavoriteService: (service: Service) => {
         set(state => ({
-            favoriteServices: state.favoriteServices.filter(id => id !== serviceId),
+            favoriteServices: state.favoriteServices.filter(s => s.id !== service.id),
+            favoriteServiceIds: state.favoriteServiceIds.filter(id => id !== service.id),
         }))
     },
 }))

@@ -5,12 +5,12 @@ import useFavoritesStore from "../stores/favorites-store"
 
 export default function FavoriteServicesPage() {
     const favoriteServices = useFavoritesStore(state => state.getFavoriteServices())
-    const fetchedFavorites = useFavoritesStore(state => state.fetchedFavorites)
+    const isLoadingFavorites = useFavoritesStore(state => state.isLoadingFavorites)
 
     return (
         <PageContainer className="">
             <ScrollView>
-                <ServiceList list={favoriteServices} isLoading={!fetchedFavorites} isCompact />
+                <ServiceList list={favoriteServices} isLoading={isLoadingFavorites} isCompact />
             </ScrollView>
         </PageContainer>
     )
