@@ -28,7 +28,7 @@ export default function HomePage() {
                     </Link>
                 </View>
                 <View className="flex-row gap-2">
-                    <Link href="/favorites">
+                    <Link href="/(favorites)/businesses">
                         <StyledIcon>
                             <MaterialCommunityIcons name="cards-heart" size={24} color="primary" />
                         </StyledIcon>

@@ -13,6 +13,7 @@ import { Stack, useRouter, useSegments } from "expo-router"
 import * as SplashScreen from "expo-splash-screen"
 import { cssInterop } from "nativewind"
 import { useEffect } from "react"
+import { Text } from "react-native"
 import "../../global.css"
 import useAuthStore from "../stores/auth-store"
 
@@ -88,7 +89,15 @@ export default function RootLayout() {
             <Stack.Screen name="(tabs)" options={{ animation: "fade" }} />
             <Stack.Screen name="business/[id]" options={{ animation: "fade" }} />
             <Stack.Screen name="service/[id]" options={{ animation: "fade" }} />
-            <Stack.Screen name="favorites" options={{ animation: "fade" }} />
+            <Stack.Screen
+                name="(favorites)"
+                options={{
+                    animation: "fade",
+                    headerShown: true,
+                    headerLeft: () => <Text>Teste</Text>,
+                    // header
+                }}
+            />
         </Stack>
     )
 }

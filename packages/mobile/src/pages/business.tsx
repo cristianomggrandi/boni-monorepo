@@ -25,7 +25,7 @@ type BusinessType = Prisma.BusinessGetPayload<{
 type ServiceGroupType = BusinessType["serviceGroups"][0]
 type ServiceType = ServiceGroupType["services"][0]
 
-function ServiceCard({ service }: { service: ServiceType }) {
+export function ServiceCard({ service }: { service: ServiceType }) {
     return (
         <Link href={`/service/${service.id}`}>
             <View className="flex-row elevation-sm bg-white rounded-xl p-2 gap-2">

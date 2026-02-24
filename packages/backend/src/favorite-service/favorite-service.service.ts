@@ -16,7 +16,7 @@ export class FavoriteServiceService {
     async findAll(user: UserJWTPayload) {
         const res = await this.prisma.user.findUnique({
             where: { id: user.sub },
-            select: { favoriteServices: { select: { id: true } } },
+            include: { favoriteServices: true },
         })
 
         if (!res) return []
