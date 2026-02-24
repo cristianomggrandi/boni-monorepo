@@ -1,10 +1,8 @@
 import { Business, BusinessCategory, Prisma } from "@boni/database/dist/generated/prisma/client"
 import Feather from "@expo/vector-icons/Feather"
-import Ionicons from "@expo/vector-icons/Ionicons"
-import { FlashList } from "@shopify/flash-list"
 import { useRouter } from "expo-router"
 import React, { use, useLayoutEffect, useState } from "react"
-import { ActivityIndicator, Pressable, View } from "react-native"
+import { Pressable, View } from "react-native"
 import Animated, {
     Extrapolation,
     interpolate,
@@ -14,12 +12,11 @@ import Animated, {
     useSharedValue,
 } from "react-native-reanimated"
 import api from "../api/boni-api"
-import BusinessCard from "../components/cards/business"
 import CategoryList from "../components/category-list"
+import BusinessList from "../components/lists/business-list"
 import PageContainer from "../components/page-container"
 import SearchBar from "../components/search-bar"
 import StyledIcon from "../components/styled/styled-icon"
-import StyledText from "../components/styled/styled-text"
 import useUserDependentPromise from "../hooks/use-user-dependent-promise"
 
 type Filters = Record<string, string>
@@ -50,39 +47,6 @@ async function getBusinesses(filters: Filters): Promise<Business[]> {
         console.log("BUSINESS ERROR:", error)
         return []
     }
-}
-
-export function BusinessList({ list, isLoading }: { list: Business[]; isLoading: boolean }) {
-    return (
-        <View className="flex-1">
-            <View className="flex-row items-center justify-between p-2">
-                <StyledText className="text-xl font-semibold">
-                    {isLoading ? "Carregando" : list.length} resultados
-                </StyledText>
-                <StyledIcon>
-                    <Ionicons name="options-outline" size={24} color="black" />
-                </StyledIcon>
-            </View>
-            <View className="flex-1">
-                {isLoading ? (
-                    <View className="flex-1 items-center justify-center">
-                        <ActivityIndicator size={80} className="fill-primary text-primary" />
-                    </View>
-                ) : (
-                    <FlashList
-                        data={[...list, ...list, ...list]}
-                        renderItem={({ item }) => <BusinessCard business={item} key={item.id} />}
-                        keyExtractor={(item, index) => (item.id + 10 * index).toString()}
-                        showsVerticalScrollIndicator={false}
-                        ListEmptyComponent={<View>{/* TODO: Criar Skeleton */}</View>}
-                        ItemSeparatorComponent={() => <View className="h-2" />}
-                        contentContainerClassName="pt-2 pb-4 px-2"
-                        scrollEnabled={false}
-                    />
-                )}
-            </View>
-        </View>
-    )
 }
 
 function SearchHeader({ scrollY }: { scrollY: SharedValue<number> }) {

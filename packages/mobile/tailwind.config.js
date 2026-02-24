@@ -7,7 +7,8 @@ module.exports = {
             colors: {
                 primary: "#FFC3CC",
                 secondary: "#D2DB76",
-                background: "#FCF8F8",
+                // background: "#FCF8F8",
+                background: "#FFFFFF",
             },
             fontFamily: {
                 sans: ["PlusJakarta"],

@@ -5,7 +5,13 @@ import { useRouter } from "expo-router"
 import { Pressable, View } from "react-native"
 import StyledText from "../styled/styled-text"
 
-export default function BusinessCard({ business }: { business: Prisma.BusinessGetPayload<{}> }) {
+export default function BusinessCard({
+    business,
+    isCompact = false,
+}: {
+    business: Prisma.BusinessGetPayload<{}>
+    isCompact?: boolean
+}) {
     const router = useRouter()
 
     console.log("BUSINESS CARD RENDER:", business)
@@ -14,8 +20,25 @@ export default function BusinessCard({ business }: { business: Prisma.BusinessGe
         <Pressable
             onPress={() => router.push({ pathname: "/business/[id]", params: { id: business.id } })}
         >
-            <View className="rounded-2xl bg-white border-0 p-4 justify-center gap-2 flex-row elevation">
+            <View className="rounded-2xl bg-white border-0 p-2 justify-center gap-2 flex-row elevation">
                 <View>
+                    {!business.image ? (
+                        <Image
+                            source={{ uri: business.image }}
+                            className={"aspect-square rounded-lg " + (isCompact ? "h-24" : "h-28")}
+                        />
+                    ) : (
+                        <View
+                            className={
+                                "items-center rounded-lg justify-center bg-red-300 aspect-square " +
+                                (isCompact ? "h-24" : "h-28")
+                            }
+                        >
+                            <StyledText>Foto</StyledText>
+                        </View>
+                    )}
+                </View>
+                {/* <View>
                     {business.image ? (
                         <Image
                             source={{ uri: business.image }}
@@ -26,7 +49,7 @@ export default function BusinessCard({ business }: { business: Prisma.BusinessGe
                             <StyledText>Foto</StyledText>
                         </View>
                     )}
-                </View>
+                </View> */}
                 <View className="flex-1 justify-between">
                     <View className="flex-row gap-2">
                         <View className="flex-1">

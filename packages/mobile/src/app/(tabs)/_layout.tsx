@@ -1,4 +1,4 @@
-import PageHeader from "@/src/components/page-header"
+import { TabPageHeader } from "@/src/components/page-header"
 import StyledText from "@/src/components/styled/styled-text"
 import Feather from "@expo/vector-icons/Feather"
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5"
@@ -9,7 +9,12 @@ import { View } from "react-native"
 
 export default function TabsLayout() {
     return (
-        <Tabs screenOptions={{ headerShown: true, header: PageHeader }}>
+        <Tabs
+            screenOptions={{
+                headerShown: true,
+                header: TabPageHeader,
+            }}
+        >
             <Tabs.Screen
                 name="index"
                 options={{

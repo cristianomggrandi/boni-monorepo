@@ -94,7 +94,13 @@ function BookingsList() {
                 keyExtractor={(item, index) => (item.id + 10 * index).toString()} // TODO: Voltar ao normal
                 showsVerticalScrollIndicator={false}
                 scrollEnabled={false}
-                ListEmptyComponent={<View>{/* TODO: Criar placeholder */}</View>}
+                ListEmptyComponent={
+                    <View className="items-center justify-center">
+                        <StyledText className="text-lg">
+                            Você não possui nenhum agendamento
+                        </StyledText>
+                    </View>
+                }
                 ItemSeparatorComponent={() => <View className="h-2" />}
                 contentContainerClassName="pt-2 pb-4 px-2"
             />
@@ -105,7 +111,13 @@ function BookingsList() {
                 keyExtractor={(item, index) => (item.id + 10 * index).toString()} // TODO: Voltar ao normal
                 showsVerticalScrollIndicator={false}
                 scrollEnabled={false}
-                ListEmptyComponent={<View>{/* TODO: Criar placeholder */}</View>}
+                ListEmptyComponent={
+                    <View className="items-center justify-center">
+                        <StyledText className="text-lg">
+                            Você não concluiu nenhum agendamento
+                        </StyledText>
+                    </View>
+                }
                 ItemSeparatorComponent={() => <View className="h-2" />}
                 contentContainerClassName="pt-2 pb-4 px-2"
             />
@@ -115,7 +127,7 @@ function BookingsList() {
 
 export default function BookingsPage() {
     return (
-        <PageContainer className="gap-2">
+        <PageContainer enableSafeSpace className="gap-2">
             <Suspense fallback={<Text>// TODO:</Text>}>
                 <BookingsList />
             </Suspense>

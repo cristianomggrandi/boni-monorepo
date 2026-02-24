@@ -13,8 +13,8 @@ import { Stack, useRouter, useSegments } from "expo-router"
 import * as SplashScreen from "expo-splash-screen"
 import { cssInterop } from "nativewind"
 import { useEffect } from "react"
-import { Text } from "react-native"
 import "../../global.css"
+import { StackPageHeader, StackPageHeaderTitle } from "../components/page-header"
 import useAuthStore from "../stores/auth-store"
 
 cssInterop(Image, { className: "style" })
@@ -84,18 +84,26 @@ export default function RootLayout() {
     if (!loaded && !error) return null
 
     return (
-        <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="(auth)" options={{ animation: "fade" }} />
-            <Stack.Screen name="(tabs)" options={{ animation: "fade" }} />
-            <Stack.Screen name="business/[id]" options={{ animation: "fade" }} />
-            <Stack.Screen name="service/[id]" options={{ animation: "fade" }} />
+        <Stack
+            screenOptions={{
+                headerShown: true,
+                header: StackPageHeader,
+                headerTitle: props => <StackPageHeaderTitle {...props} />,
+            }}
+        >
+            <Stack.Screen name="(auth)" options={{ animation: "fade", headerShown: false }} />
+            <Stack.Screen name="(tabs)" options={{ animation: "fade", headerShown: false }} />
+            <Stack.Screen
+                name="business/[id]"
+                options={{ headerShown: false, animation: "fade" }}
+            />
+            <Stack.Screen name="service/[id]" options={{ headerShown: false, animation: "fade" }} />
             <Stack.Screen
                 name="(favorites)"
                 options={{
                     animation: "fade",
                     headerShown: true,
-                    headerLeft: () => <Text>Teste</Text>,
-                    // header
+                    title: "Favoritos",
                 }}
             />
         </Stack>

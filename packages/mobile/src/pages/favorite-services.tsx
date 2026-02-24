@@ -1,19 +1,17 @@
-import { FlatList } from "react-native"
+import { ScrollView } from "react-native"
+import ServiceList from "../components/lists/service-list"
 import PageContainer from "../components/page-container"
 import useFavoritesStore from "../stores/favorites-store"
-import { ServiceCard } from "./business"
 
 export default function FavoriteServicesPage() {
     const favoriteServices = useFavoritesStore(state => state.getFavoriteServices())
+    const fetchedFavorites = useFavoritesStore(state => state.fetchedFavorites)
 
     return (
-        <PageContainer edges={["top", "left", "right", "bottom"]} className="gap-2 px-0">
-            <FlatList
-                data={favoriteServices}
-                renderItem={({ item }) => <ServiceCard service={item} />}
-                // TODO: Key
-                keyExtractor={(item, index) => (item.id + 10 * index).toString()}
-            />
+        <PageContainer className="">
+            <ScrollView>
+                <ServiceList list={favoriteServices} isLoading={!fetchedFavorites} isCompact />
+            </ScrollView>
         </PageContainer>
     )
 }

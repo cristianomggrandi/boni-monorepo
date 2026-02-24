@@ -73,7 +73,7 @@ export default function ServicePage() {
                         <Feather name="arrow-left" size={24} color="black" />
                     </StyledIcon>
                 </StyledIcon>
-                <StyledText className="font-jakarta-bold text-2xl">{service.name}</StyledText>
+                <StyledText className="font-jakarta-bold text-xl">{service.name}</StyledText>
                 <FavoriteIcon isFavorite={isFavorite} handleFavoriteToggle={handleFavoriteToggle} />
             </View>
             <View className="relative flex-1">

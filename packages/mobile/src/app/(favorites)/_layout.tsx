@@ -17,7 +17,7 @@ export const MaterialTopTabs = withLayoutContext<
 
 export default function FavoritesLayout() {
     return (
-        <MaterialTopTabs screenOptions={{ tabBarIndicatorStyle: { backgroundColor: "#FFC3CC" } }}>
+        <MaterialTopTabs screenOptions={{ tabBarIndicatorStyle: { backgroundColor: "#D2DB76" } }}>
             <MaterialTopTabs.Screen name="businesses" options={{ title: "Estabelecimentos" }} />
             <MaterialTopTabs.Screen name="services" options={{ title: "Serviços" }} />
         </MaterialTopTabs>

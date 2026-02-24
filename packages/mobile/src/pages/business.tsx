@@ -3,16 +3,16 @@ import Feather from "@expo/vector-icons/Feather"
 import FontAwesome from "@expo/vector-icons/FontAwesome"
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons"
 import { Image } from "expo-image"
-import { Link, useLocalSearchParams } from "expo-router"
+import { useLocalSearchParams } from "expo-router"
 import { useEffect, useRef, useState } from "react"
 import { Dimensions, FlatList, Pressable, ScrollView, View } from "react-native"
 import api from "../api/boni-api"
+import { ServiceCard } from "../components/cards/service-card"
 import FavoriteIcon from "../components/favorite-icon"
 import PageContainer from "../components/page-container"
 import StyledIcon from "../components/styled/styled-icon"
 import StyledText from "../components/styled/styled-text"
 import useFavoritesStore from "../stores/favorites-store"
-import { formatDuration, formatMoney } from "../util/formatting"
 
 type BusinessType = Prisma.BusinessGetPayload<{
     include: {
@@ -24,59 +24,6 @@ type BusinessType = Prisma.BusinessGetPayload<{
 
 type ServiceGroupType = BusinessType["serviceGroups"][0]
 type ServiceType = ServiceGroupType["services"][0]
-
-export function ServiceCard({ service }: { service: ServiceType }) {
-    return (
-        <Link href={`/service/${service.id}`}>
-            <View className="flex-row elevation-sm bg-white rounded-xl p-2 gap-2">
-                <View className="h-32 w-32 m-1 rounded">
-                    <Image
-                        className="h-full w-full rounded-xl"
-                        source={
-                            // TODO: Remover fallback
-                            service.imageUrl ??
-                            "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/14/e4/3b/b5/view-from-the-top.jpg?w=500&h=500&s=1"
-                        }
-                    />
-                </View>
-                <View className="flex-1 justify-between">
-                    <View className="">
-                        <StyledText className="font-semibold text-lg">{service.name}</StyledText>
-                        <StyledText className="text-sm line-clamp-3">
-                            {service.description}
-                        </StyledText>
-                    </View>
-                    <View className="flex-row justify-between">
-                        <View>
-                            {service.duration ? (
-                                <View className="flex-row items-center px-2 gap-1 opacity-65 bg-gray-200 rounded border-gray-300 border-hairlin">
-                                    {/* // TODO: Com ou sem ícone */}
-                                    <StyledText className="">
-                                        <MaterialCommunityIcons
-                                            name="clock"
-                                            size={14}
-                                            className="color-gray-800"
-                                        />{" "}
-                                        {formatDuration(service.duration)}
-                                    </StyledText>
-                                </View>
-                            ) : null}
-                        </View>
-                        <View>
-                            {service.price ? (
-                                <View className="bg-secondary rounded-full px-2 py-1">
-                                    <StyledText className="font-semibold items-center justify-center leading-4">
-                                        {formatMoney(service.price)}
-                                    </StyledText>
-                                </View>
-                            ) : null}
-                        </View>
-                    </View>
-                </View>
-            </View>
-        </Link>
-    )
-}
 
 function ListHeader({ business }: { business: BusinessType }) {
     return (
@@ -211,7 +158,7 @@ export default function BusinessPage() {
                         <Feather name="arrow-left" size={24} color="black" />
                     </StyledIcon>
                 </StyledIcon>
-                <StyledText className="font-jakarta-bold text-2xl">{business.name}</StyledText>
+                <StyledText className="font-jakarta-bold text-xl">{business.name}</StyledText>
                 <FavoriteIcon isFavorite={isFavorite} handleFavoriteToggle={handleFavoriteToggle} />
             </View>
             <View className="relative">
@@ -250,7 +197,9 @@ export default function BusinessPage() {
                                 </StyledText>
                                 <FlatList
                                     data={item.services}
-                                    renderItem={({ item }) => <ServiceCard service={item} />}
+                                    renderItem={({ item }) => (
+                                        <ServiceCard service={item}  />
+                                    )}
                                     keyExtractor={
                                         // TODO: Voltar ao normal
                                         (item, index) => (item.id + 10 * index).toString()
