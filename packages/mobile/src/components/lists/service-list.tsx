@@ -19,7 +19,8 @@ export default function ServiceList({
         <View className="flex-1">
             <View className="flex-row items-center justify-between p-2">
                 <StyledText className="text-xl font-semibold">
-                    {isLoading ? "Carregando" : list.length} resultados
+                    {isLoading ? "Carregando" : list.length}{" "}
+                    {list.length === 1 ? "resultado" : "resultados"}
                 </StyledText>
                 <StyledIcon>
                     <Ionicons name="options-outline" size={24} color="black" />

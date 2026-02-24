@@ -1,5 +1,6 @@
 import { formatDuration, formatMoney } from "@/src/util/formatting"
 import { Service } from "@boni/database/dist/generated/prisma/client"
+import FontAwesome from "@expo/vector-icons/FontAwesome"
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons"
 import { Image } from "expo-image"
 import { useRouter } from "expo-router"
@@ -38,14 +39,24 @@ export function ServiceCard({
                     )}
                 </View>
                 <View className="flex-1 justify-between">
-                    <View className="">
-                        <StyledText className="font-semibold">{service.name}</StyledText>
-                        <StyledText
-                            className={"text-sm " + (isCompact ? "line-clamp-1" : "line-clamp-2")}
-                        >
-                            {service.description} teste tset est es tsetes tsestetes steste steste
-                            steste steset steste stetes t se tes tes tesstetesste ste
-                        </StyledText>
+                    <View className="flex-row gap-2">
+                        <View className="flex-1">
+                            <StyledText className="font-semibold">{service.name}</StyledText>
+                            <StyledText
+                                className={
+                                    "text-sm " + (isCompact ? "line-clamp-1" : "line-clamp-2")
+                                }
+                            >
+                                {service.description} teste tset est es tsetes tsestetes steste
+                                steste steste steset steste stetes t se tes tes tesstetesste ste
+                            </StyledText>
+                        </View>
+                        <View className="self-start flex-row items-center">
+                            <FontAwesome name="star" size={10} className="color-secondary" />
+                            <StyledText className="font-semibold text-sm uppercase px-1">
+                                4.9
+                            </StyledText>
+                        </View>
                     </View>
                     <View className="flex-row justify-between">
                         <View>
