@@ -47,8 +47,7 @@ export function ServiceCard({
                                     "text-sm " + (isCompact ? "line-clamp-1" : "line-clamp-2")
                                 }
                             >
-                                {service.description} teste tset est es tsetes tsestetes steste
-                                steste steste steset steste stetes t se tes tes tesstetesste ste
+                                {service.description}
                             </StyledText>
                         </View>
                         <View className="self-start flex-row items-center">
