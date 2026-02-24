@@ -14,17 +14,15 @@ export default function BusinessCard({
 }) {
     const router = useRouter()
 
-    console.log("BUSINESS CARD RENDER:", business)
-
     return (
         <Pressable
             onPress={() => router.push({ pathname: "/business/[id]", params: { id: business.id } })}
         >
             <View className="rounded-2xl bg-white border-0 p-2 justify-center gap-2 flex-row elevation">
                 <View>
-                    {!business.image ? (
+                    {business.image ? (
                         <Image
-                            source={{ uri: business.image }}
+                            source={business.image}
                             className={"aspect-square rounded-lg " + (isCompact ? "h-24" : "h-28")}
                         />
                     ) : (
@@ -38,18 +36,6 @@ export default function BusinessCard({
                         </View>
                     )}
                 </View>
-                {/* <View>
-                    {business.image ? (
-                        <Image
-                            source={{ uri: business.image }}
-                            className="aspect-square h-20 rounded-xl"
-                        />
-                    ) : (
-                        <View className="h-24 items-center justify-center bg-red-300 aspect-square">
-                            <StyledText>Foto</StyledText>
-                        </View>
-                    )}
-                </View> */}
                 <View className="flex-1 justify-between">
                     <View className="flex-row gap-2">
                         <View className="flex-1">
