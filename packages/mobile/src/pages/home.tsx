@@ -15,7 +15,7 @@ export default function HomePage() {
 
     return (
         <PageContainer enableSafeSpace className="gap-2">
-            <View className="p-2 flex-row justify-between">
+            {/* <View className="p-2 flex-row justify-between">
                 <View className="flex-row">
                     <Link href="/profile">
                         <StyledIcon>
@@ -37,7 +37,7 @@ export default function HomePage() {
                         <MaterialCommunityIcons name="bell" size={24} color="black" />
                     </StyledIcon>
                 </View>
-            </View>
+            </View> */}
             <View className="p-4 mb-4">
                 <View>
                     <StyledText className="uppercase text-sm font-semibold">

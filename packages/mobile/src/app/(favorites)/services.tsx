@@ -1,5 +1,5 @@
-import FavoriteServicesesPage from "@/src/pages/favorite-services"
+import FavoriteServicesPage from "@/src/pages/favorite-services"
 
 export default function FavoriteServices() {
-    return <FavoriteServicesesPage />
+    return <FavoriteServicesPage />
 }

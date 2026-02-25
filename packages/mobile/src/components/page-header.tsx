@@ -2,7 +2,6 @@ import Feather from "@expo/vector-icons/Feather"
 import { BottomTabHeaderProps } from "@react-navigation/bottom-tabs"
 import { NativeStackHeaderProps } from "@react-navigation/native-stack"
 import { useRouter } from "expo-router"
-import { ReactNode } from "react"
 import { Pressable, View } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import StyledIcon from "./styled/styled-icon"
@@ -12,7 +11,7 @@ export function RouterBackButton() {
     const router = useRouter()
 
     return (
-        <Pressable onPress={router.back} className="absolute left-4">
+        <Pressable onPress={() => router.back()}>
             <StyledIcon>
                 <Feather name="arrow-left" size={24} color="black" />
             </StyledIcon>
@@ -22,40 +21,62 @@ export function RouterBackButton() {
 
 export function TabPageHeader(props: BottomTabHeaderProps) {
     return (
-        <SafeAreaView className="bg-background" edges={["top", "right", "left"]}>
-            <View className="flex-row items-center my-4">
-                <RouterBackButton />
-                <StyledText className="text-xl left-1/2 -translate-x-[50%] font-jakarta-bold">
-                    {props.options.title}
-                </StyledText>
+        <SafeAreaView className="h-28 bg-background" edges={["top", "right", "left"]}>
+            <View className="flex-row items-center justify-between relative">
+                {props.options.headerLeft ? (
+                    <View className="ml-5 z-10">{props.options.headerLeft({})}</View>
+                ) : null}
+                {props.options.headerRight ? (
+                    <View className="mr-5 z-10">
+                        {props.options.headerRight({ canGoBack: true })}
+                    </View>
+                ) : null}
+                <View className="absolute left-0 right-0 top-0 bottom-0 flex items-center justify-center pointer-events-none">
+                    {props.options.headerTitle ? (
+                        typeof props.options.headerTitle === "string" ? (
+                            <StyledText className="text-center">
+                                {props.options.headerTitle}
+                            </StyledText>
+                        ) : (
+                            props.options.headerTitle({
+                                children: props.options.title ?? "",
+                            })
+                        )
+                    ) : (
+                        <StyledText className="text-center text-xl font-jakarta-bold">
+                            {props.options.title ?? ""}
+                        </StyledText>
+                    )}
+                </View>
             </View>
         </SafeAreaView>
     )
 }
-
-// TODO: Padronizar tamanhos e posições de headers
 
 export function StackPageHeader(props: NativeStackHeaderProps) {
-    const HeaderTitle = props.options.headerTitle as (props: {
-        children: string
-        tintColor?: string | undefined
-    }) => ReactNode
-
     return (
-        <SafeAreaView className="bg-white" edges={["top", "right", "left"]}>
-            <View className="flex-row items-center my-4">
-                <RouterBackButton />
-                <HeaderTitle>{props.options.title ?? "No title"}</HeaderTitle>
-                {props.options.headerRight ? props.options.headerRight({}) : null}
+        <SafeAreaView className="h-28 bg-background" edges={["top", "right", "left"]}>
+            <View className="flex-row items-center">
+                {props.options.headerLeft ? (
+                    <View className="ml-5">{props.options.headerLeft({})}</View>
+                ) : null}
+                {props.options.headerTitle ? (
+                    <View className="flex-1">
+                        {typeof props.options.headerTitle === "string" ? (
+                            <StyledText>{props.options.headerTitle}</StyledText>
+                        ) : (
+                            props.options.headerTitle({
+                                children: props.options.title ?? "",
+                            })
+                        )}
+                    </View>
+                ) : (
+                    <View className="flex-1"></View>
+                )}
+                {props.options.headerRight ? (
+                    <View className="mr-5">{props.options.headerRight({ canGoBack: true })}</View>
+                ) : null}
             </View>
         </SafeAreaView>
-    )
-}
-
-export function StackPageHeaderTitle(props: { children: string; tintColor?: string | undefined }) {
-    return (
-        <StyledText className="text-xl left-1/2 -translate-x-[50%] font-jakarta-bold">
-            {props.children}
-        </StyledText>
     )
 }

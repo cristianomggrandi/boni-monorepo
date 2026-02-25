@@ -6,6 +6,7 @@ import {
     useFonts,
 } from "@expo-google-fonts/plus-jakarta-sans"
 import Entypo from "@expo/vector-icons/Entypo"
+import Feather from "@expo/vector-icons/Feather"
 import FontAwesome from "@expo/vector-icons/FontAwesome"
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons"
 import { Image } from "expo-image"
@@ -13,8 +14,10 @@ import { Stack, useRouter, useSegments } from "expo-router"
 import * as SplashScreen from "expo-splash-screen"
 import { cssInterop } from "nativewind"
 import { useEffect } from "react"
+import { Pressable } from "react-native"
 import "../../global.css"
-import { StackPageHeader, StackPageHeaderTitle } from "../components/page-header"
+import { RouterBackButton, StackPageHeader } from "../components/page-header"
+import StyledIcon from "../components/styled/styled-icon"
 import useAuthStore from "../stores/auth-store"
 
 cssInterop(Image, { className: "style" })
@@ -88,7 +91,9 @@ export default function RootLayout() {
             screenOptions={{
                 headerShown: true,
                 header: StackPageHeader,
-                headerTitle: props => <StackPageHeaderTitle {...props} />,
+                headerLeft: () => <RouterBackButton />,
+                headerTitleAlign: "center",
+                headerShadowVisible: false,
             }}
         >
             <Stack.Screen name="(auth)" options={{ animation: "fade", headerShown: false }} />
@@ -104,6 +109,13 @@ export default function RootLayout() {
                     animation: "fade",
                     headerShown: true,
                     title: "Favoritos",
+                    headerRight: () => (
+                        <Pressable onPress={router.back}>
+                            <StyledIcon>
+                                <Feather name="search" size={24} color="black" />
+                            </StyledIcon>
+                        </Pressable>
+                    ),
                 }}
             />
         </Stack>
