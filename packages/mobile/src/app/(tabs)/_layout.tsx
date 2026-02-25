@@ -15,6 +15,7 @@ export default function TabsLayout() {
                 headerShown: true,
                 headerShadowVisible: false,
                 header: TabPageHeader,
+                headerLeft: RouterBackButton,
             }}
         >
             <Tabs.Screen
@@ -71,8 +72,6 @@ export default function TabsLayout() {
                     ),
                     tabBarLabel: ({ focused }) =>
                         focused ? <StyledText className="text-xs">Busca</StyledText> : null,
-                    title: "Busca",
-                    headerShown: false,
                 }}
             />
             <Tabs.Screen
@@ -108,7 +107,7 @@ export default function TabsLayout() {
                     ),
                     tabBarLabel: ({ focused }) =>
                         focused ? <StyledText className="text-xs">Perfil</StyledText> : null,
-                    title: "",
+                    title: "Perfil",
                     headerLeft: () => <RouterBackButton />,
                 }}
             />

@@ -1,7 +1,8 @@
 import { Business } from "@boni/database/dist/generated/prisma/client"
 import Ionicons from "@expo/vector-icons/Ionicons"
 import { FlashList } from "@shopify/flash-list"
-import { ActivityIndicator, View } from "react-native"
+import { useRouter } from "expo-router"
+import { ActivityIndicator, Pressable, View } from "react-native"
 import BusinessCard from "../cards/business-card"
 import StyledIcon from "../styled/styled-icon"
 import StyledText from "../styled/styled-text"
@@ -15,6 +16,8 @@ export default function BusinessList({
     isLoading: boolean
     isCompact?: boolean
 }) {
+    const router = useRouter()
+
     return (
         <View className="flex-1">
             <View className="flex-row items-center justify-between p-2">
@@ -22,9 +25,11 @@ export default function BusinessList({
                     {isLoading ? "Carregando" : list.length}{" "}
                     {list.length === 1 ? "resultado" : "resultados"}
                 </StyledText>
-                <StyledIcon>
-                    <Ionicons name="options-outline" size={24} color="black" />
-                </StyledIcon>
+                <Pressable onPress={() => router.push("/search-filters")}>
+                    <StyledIcon>
+                        <Ionicons name="options-outline" size={24} color="black" />
+                    </StyledIcon>
+                </Pressable>
             </View>
             <View className="flex-1">
                 {isLoading ? (

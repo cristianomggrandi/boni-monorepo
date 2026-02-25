@@ -21,7 +21,7 @@ export function RouterBackButton() {
 
 export function TabPageHeader(props: BottomTabHeaderProps) {
     return (
-        <SafeAreaView className="h-28 bg-background" edges={["top", "right", "left"]}>
+        <SafeAreaView className="h-24 bg-background" edges={["top", "right", "left"]}>
             <View className="flex-row items-center justify-between relative">
                 {props.options.headerLeft ? (
                     <View className="ml-5 z-10">{props.options.headerLeft({})}</View>
@@ -55,7 +55,7 @@ export function TabPageHeader(props: BottomTabHeaderProps) {
 
 export function StackPageHeader(props: NativeStackHeaderProps) {
     return (
-        <SafeAreaView className="h-28 bg-background" edges={["top", "right", "left"]}>
+        <SafeAreaView className="h-24" edges={["top", "right", "left"]}>
             <View className="flex-row items-center">
                 {props.options.headerLeft ? (
                     <View className="ml-5">{props.options.headerLeft({})}</View>
