@@ -1,3 +1,5 @@
+import { BACKGROUND_COLOR, PRIMARY_COLOR, SECONDARY_COLOR } from "./src/util/styling"
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
     content: ["./src/**/*.{js,ts,jsx,tsx}"],
@@ -5,10 +7,10 @@ module.exports = {
     theme: {
         extend: {
             colors: {
-                primary: "#FFC3CC",
-                secondary: "#D2DB76",
+                primary: PRIMARY_COLOR,
+                secondary: SECONDARY_COLOR,
                 // background: "#FCF8F8",
-                background: "#FFFFFF",
+                background: BACKGROUND_COLOR,
             },
             fontFamily: {
                 sans: ["PlusJakarta"],

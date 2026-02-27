@@ -1,6 +1,11 @@
 import { cn } from "@/src/util/styling"
-import { Text, TextProps } from "react-native"
+import { TextProps } from "react-native"
+import Animated from "react-native-reanimated"
 
-export default function StyledText({ className, ...props }: TextProps) {
-    return <Text className={cn("font-jakarta", className)}>{props.children}</Text>
+export default function StyledText({ className, children, ...props }: TextProps) {
+    return (
+        <Animated.Text className={cn("font-jakarta", className)} {...props}>
+            {children}
+        </Animated.Text>
+    )
 }

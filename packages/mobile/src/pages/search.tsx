@@ -1,4 +1,4 @@
-import { Business, BusinessCategory, Prisma } from "@boni/database/dist/generated/prisma/client"
+import { Business, BusinessCategory } from "@boni/database/dist/generated/prisma/client"
 import { useNavigation } from "expo-router"
 import React, { use, useLayoutEffect, useState } from "react"
 import { View } from "react-native"
@@ -11,43 +11,13 @@ import Animated, {
     useSharedValue,
 } from "react-native-reanimated"
 import { SafeAreaView } from "react-native-safe-area-context"
-import api from "../api/boni-api"
 import CategoryList from "../components/category-list"
 import BusinessList from "../components/lists/business-list"
 import PageContainer from "../components/page-container"
 import { RouterBackButton } from "../components/page-header"
 import SearchBar from "../components/search-bar"
 import useUserDependentPromise from "../hooks/use-user-dependent-promise"
-
-type Filters = Record<string, string>
-
-type CategoryWithSubcategories = Prisma.BusinessCategoryGetPayload<{
-    include: { subcategories: true }
-}>
-
-async function getCategories(): Promise<CategoryWithSubcategories[]> {
-    try {
-        const response = await api.get("categories")
-
-        return response.data
-    } catch (error) {
-        console.log("CATEGORIES ERROR:", error)
-        return []
-    }
-}
-
-async function getBusinesses(filters: Filters): Promise<Business[]> {
-    try {
-        const params = new URLSearchParams(filters)
-
-        const response = await api.get("business?" + params.toString())
-
-        return response.data
-    } catch (error) {
-        console.log("BUSINESS ERROR:", error)
-        return []
-    }
-}
+import { CategoryWithSubcategories, Filters, getBusinesses, getCategories } from "../util/db"
 
 function SearchHeader({ scrollY }: { scrollY: SharedValue<number> }) {
     const animatedHeaderStyle = useAnimatedStyle(() => {
@@ -104,7 +74,7 @@ export default function Search() {
 
     const getCategoriesPromise = useUserDependentPromise(getCategories)
     const categories = use(getCategoriesPromise)
-    const [selectedCategory, setSelectedCategory] = useState<BusinessCategory>()
+    const [selectedCategory, setSelectedCategory] = useState<CategoryWithSubcategories>()
 
     const [filters, setFilters] = useState<Filters>({})
     const addFilter = (k: string, v: string) => setFilters(prev => ({ ...prev, [k]: v }))
@@ -122,9 +92,7 @@ export default function Search() {
 
     useLayoutEffect(() => {
         if (selectedCategory) {
-            api.get("categories/" + selectedCategory.id + "/subcategories")
-                .then(response => setSubCategories(response.data))
-                .catch(err => console.log(err))
+            setSubCategories(selectedCategory.subcategories)
 
             addFilter("category", selectedCategory.id.toString())
         } else {
@@ -167,15 +135,21 @@ export default function Search() {
             <Animated.ScrollView onScroll={scrollHandler} scrollEventThrottle={16}>
                 {/* TODO: Checar se quero px-6 ou p-6 ou (px-6 + py-4) */}
                 <CategoryList
-                    categories={categories as BusinessCategory[]}
-                    setSelectedCategory={setSelectedCategory}
+                    categories={categories ?? []}
+                    onSelect={(selected: CategoryWithSubcategories) =>
+                        selectedCategory?.id === selected.id
+                            ? setSelectedCategory(undefined)
+                            : setSelectedCategory(selected)
+                    }
                     selectedCategory={selectedCategory}
                 />
-                {/* TODO: Criar Skeleton para carregar subcategories (JQuery? ReactQuery?, React hook use?) */}
-                {/* Acho que vai ser bom usar o useTransition */}
                 <CategoryList
                     categories={subCategories as BusinessCategory[]}
-                    setSelectedCategory={setSelectedSubCategory}
+                    onSelect={(selected: BusinessCategory) =>
+                        selectedSubCategory?.id === selected.id
+                            ? setSelectedSubCategory(undefined)
+                            : setSelectedSubCategory(selected)
+                    }
                     selectedCategory={selectedSubCategory}
                     size="small"
                 />

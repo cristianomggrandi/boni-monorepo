@@ -197,9 +197,7 @@ export default function BusinessPage() {
                                 </StyledText>
                                 <FlatList
                                     data={item.services}
-                                    renderItem={({ item }) => (
-                                        <ServiceCard service={item}  />
-                                    )}
+                                    renderItem={({ item }) => <ServiceCard service={item} />}
                                     keyExtractor={
                                         // TODO: Voltar ao normal
                                         (item, index) => (item.id + 10 * index).toString()

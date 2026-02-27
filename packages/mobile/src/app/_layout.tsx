@@ -118,6 +118,15 @@ export default function RootLayout() {
                     ),
                 }}
             />
+            <Stack.Screen
+                name="search-filters"
+                options={{
+                    // presentation: "card",
+                    // animation: "slide_from_bottom",
+                    // headerShown: true,
+                    title: "Filtros",
+                }}
+            />
         </Stack>
     )
 }

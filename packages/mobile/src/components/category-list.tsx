@@ -1,16 +1,17 @@
-import { BusinessCategory, Prisma } from "@boni/database/dist/generated/prisma/client"
+import { BusinessCategory } from "@boni/database/dist/generated/prisma/client"
 import { FlatList, Pressable, View } from "react-native"
+import { CategoryWithSubcategories } from "../util/db"
 import StyledText from "./styled/styled-text"
 
-export default function CategoryList({
+function CategoryList<T extends BusinessCategory | CategoryWithSubcategories>({
     categories,
     selectedCategory,
-    setSelectedCategory,
+    onSelect,
     size = "normal",
 }: {
-    categories: BusinessCategory[]
-    selectedCategory?: BusinessCategory
-    setSelectedCategory: React.Dispatch<React.SetStateAction<BusinessCategory | undefined>>
+    categories: T[]
+    selectedCategory?: T
+    onSelect: (selected: T) => void
     size?: "small" | "normal"
 }) {
     if (!categories || !categories.length) return null
@@ -32,11 +33,7 @@ export default function CategoryList({
                             ${size === "small" ? "py-1" : "py-2"}
                             ${selectedCategory?.id === item.id ? "bg-secondary" : "bg-white"}
                         `}
-                        onPress={() =>
-                            selectedCategory?.id === item.id
-                                ? setSelectedCategory(undefined)
-                                : setSelectedCategory(item)
-                        }
+                        onPress={() => onSelect(item)}
                     >
                         <StyledText>{item.name}</StyledText>
                     </Pressable>
@@ -45,3 +42,5 @@ export default function CategoryList({
         </View>
     )
 }
+
+export default CategoryList

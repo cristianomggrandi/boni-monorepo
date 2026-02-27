@@ -12,7 +12,7 @@ export default function SearchBar({
 }) {
     return (
         <Animated.View
-            className="flex-1 p-2 rounded-2xl bg-white elevation border-0 flex-row items-center justify-center"
+            className="flex-1 px-2 rounded-2xl bg-white elevation border-0 flex-row items-center justify-center"
             style={containerStyle}
         >
             <Feather name="search" size={24} color="black" className="px-4" />

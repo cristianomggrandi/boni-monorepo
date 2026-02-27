@@ -26,10 +26,39 @@ export function TabPageHeader(props: BottomTabHeaderProps) {
                 {props.options.headerLeft ? (
                     <View className="ml-5 z-10">{props.options.headerLeft({})}</View>
                 ) : null}
+                <View className="absolute left-0 right-0 top-0 bottom-0 flex items-center justify-center pointer-events-none">
+                    {props.options.headerTitle ? (
+                        typeof props.options.headerTitle === "string" ? (
+                            <StyledText className="text-center">
+                                {props.options.headerTitle}
+                            </StyledText>
+                        ) : (
+                            props.options.headerTitle({
+                                children: props.options.title ?? "",
+                            })
+                        )
+                    ) : (
+                        <StyledText className="text-center text-xl font-jakarta-bold">
+                            {props.options.title ?? ""}
+                        </StyledText>
+                    )}
+                </View>
                 {props.options.headerRight ? (
                     <View className="mr-5 z-10">
                         {props.options.headerRight({ canGoBack: true })}
                     </View>
+                ) : null}
+            </View>
+        </SafeAreaView>
+    )
+}
+
+export function StackPageHeader(props: NativeStackHeaderProps) {
+    return (
+        <SafeAreaView className="h-24 bg-background" edges={["top", "right", "left"]}>
+            <View className="flex-row items-center justify-between relative">
+                {props.options.headerLeft ? (
+                    <View className="ml-5 z-10">{props.options.headerLeft({})}</View>
                 ) : null}
                 <View className="absolute left-0 right-0 top-0 bottom-0 flex items-center justify-center pointer-events-none">
                     {props.options.headerTitle ? (
@@ -48,33 +77,10 @@ export function TabPageHeader(props: BottomTabHeaderProps) {
                         </StyledText>
                     )}
                 </View>
-            </View>
-        </SafeAreaView>
-    )
-}
-
-export function StackPageHeader(props: NativeStackHeaderProps) {
-    return (
-        <SafeAreaView className="h-24" edges={["top", "right", "left"]}>
-            <View className="flex-row items-center">
-                {props.options.headerLeft ? (
-                    <View className="ml-5">{props.options.headerLeft({})}</View>
-                ) : null}
-                {props.options.headerTitle ? (
-                    <View className="flex-1">
-                        {typeof props.options.headerTitle === "string" ? (
-                            <StyledText>{props.options.headerTitle}</StyledText>
-                        ) : (
-                            props.options.headerTitle({
-                                children: props.options.title ?? "",
-                            })
-                        )}
-                    </View>
-                ) : (
-                    <View className="flex-1"></View>
-                )}
                 {props.options.headerRight ? (
-                    <View className="mr-5">{props.options.headerRight({ canGoBack: true })}</View>
+                    <View className="mr-5 z-10">
+                        {props.options.headerRight({ canGoBack: true })}
+                    </View>
                 ) : null}
             </View>
         </SafeAreaView>
