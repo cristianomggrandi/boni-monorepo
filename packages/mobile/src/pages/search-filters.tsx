@@ -1,9 +1,10 @@
 import { BusinessCategory } from "@boni/database/dist/generated/prisma/client"
 import FontAwesome from "@expo/vector-icons/FontAwesome"
 import Slider from "@react-native-community/slider"
-import { use, useLayoutEffect, useState } from "react"
-import { FlatList, Pressable, View } from "react-native"
-import CategoryList from "../components/category-list"
+import { useGlobalSearchParams, useRouter } from "expo-router"
+import { use, useEffect, useState } from "react"
+import { View } from "react-native"
+import HorizontalListSelector from "../components/horizontal-list-selector"
 import PageContainer from "../components/page-container"
 import StyledButton from "../components/styled/styled-button"
 import StyledText from "../components/styled/styled-text"
@@ -34,7 +35,13 @@ const SORT_BY_OPTIONS = [
     },
 ]
 
-function MinimumRatingSlider({ minimumRating, setMinimumRating }: any) {
+function MinimumRatingSlider({
+    minimumRating,
+    setMinimumRating,
+}: {
+    minimumRating: number
+    setMinimumRating: (value: number) => void
+}) {
     const [rating, setRating] = useState(minimumRating)
 
     return (
@@ -46,6 +53,7 @@ function MinimumRatingSlider({ minimumRating, setMinimumRating }: any) {
                 </StyledText>
             </View>
             <Slider
+                style={{ marginTop: 12 }}
                 minimumValue={0}
                 maximumValue={5}
                 value={rating}
@@ -61,6 +69,9 @@ function MinimumRatingSlider({ minimumRating, setMinimumRating }: any) {
 }
 
 export default function FiltersPage() {
+    const router = useRouter()
+    const globalParams = useGlobalSearchParams<{ category: string; subCategory: string }>()
+
     const [orderBy, setOrderBy] = useState(SORT_BY_OPTIONS[0])
     const [minimumRating, setMinimumRating] = useState(0)
 
@@ -71,79 +82,108 @@ export default function FiltersPage() {
     const [subCategories, setSubCategories] = useState<BusinessCategory[]>([])
     const [selectedSubCategory, setSelectedSubCategory] = useState<BusinessCategory>()
 
-    useLayoutEffect(() => {
-        if (selectedCategory) {
-            setSubCategories(selectedCategory.subcategories)
-            // getSubCategories(selectedCategory.id).then(setSubCategories).catch(console.log)
+    useEffect(() => {
+        if (categories) {
+            if (globalParams.category) {
+                const category = categories.find(c => c.id === Number(globalParams.category))
 
-            // addFilter("category", selectedCategory.id.toString())
-        } else {
-            // removeFilter("category")
-            setSubCategories([])
+                if (category) {
+                    setSelectedCategory(category)
+                    setSubCategories(category.subcategories)
+
+                    if (globalParams.subCategory) {
+                        setSelectedSubCategory(
+                            category.subcategories.find(
+                                c => c.id === Number(globalParams.subCategory)
+                            )
+                        )
+                    } else {
+                        setSelectedSubCategory(undefined)
+                    }
+                } else {
+                    setSelectedCategory(undefined)
+                    setSubCategories([])
+                    setSelectedSubCategory(undefined)
+                }
+            } else {
+                setSelectedCategory(undefined)
+                setSubCategories([])
+                setSelectedSubCategory(undefined)
+            }
         }
-
-        setSelectedSubCategory(undefined)
-    }, [selectedCategory])
-
-    useLayoutEffect(() => {
-        if (selectedSubCategory) {
-            // addFilter("category", selectedSubCategory.id.toString())
-        } else if (selectedCategory) {
-            // addFilter("category", selectedCategory.id.toString())
-        } else {
-            // removeFilter("category")
-        }
-    }, [selectedSubCategory])
+    }, [categories, globalParams.category, globalParams.subCategory])
 
     return (
         <PageContainer className="">
             <View className="flex-1 gap-4">
+                <StyledText>{JSON.stringify(globalParams)}</StyledText>
                 <View>
                     <StyledText className="px-2 text-lg font-jakarta-bold">Categorias</StyledText>
-                    <CategoryList
-                        categories={categories ?? []}
-                        onSelect={(selected: CategoryWithSubcategories) =>
-                            selectedCategory?.id === selected.id
-                                ? setSelectedCategory(undefined)
-                                : setSelectedCategory(selected)
-                        }
-                        selectedCategory={selectedCategory}
+                    <HorizontalListSelector
+                        list={categories ?? []}
+                        onSelect={selected => {
+                            if (selectedCategory) {
+                                if (selectedCategory.id === selected.id) {
+                                    setSelectedCategory(undefined)
+                                    setSubCategories([])
+
+                                    router.setParams({
+                                        category: undefined,
+                                        subCategory: undefined,
+                                    })
+                                } else {
+                                    setSelectedCategory(selected)
+                                    setSubCategories(selectedCategory.subcategories)
+
+                                    router.setParams({
+                                        category: selected.id,
+                                        subCategory: undefined,
+                                    })
+                                }
+                            } else {
+                                setSelectedCategory(selected)
+                                setSubCategories(selected.subcategories)
+
+                                router.setParams({ category: selected.id, subCategory: undefined })
+                            }
+
+                            setSelectedSubCategory(undefined)
+                        }}
+                        selected={selectedCategory}
+                        labelExtractor={item => item.name}
                     />
-                    <CategoryList
-                        categories={subCategories}
-                        onSelect={(selected: BusinessCategory) =>
-                            selectedSubCategory?.id === selected.id
-                                ? setSelectedSubCategory(undefined)
-                                : setSelectedSubCategory(selected)
-                        }
-                        selectedCategory={selectedSubCategory}
+                    <HorizontalListSelector
+                        list={subCategories}
+                        onSelect={selected => {
+                            if (selectedSubCategory) {
+                                if (selectedSubCategory.id === selected.id) {
+                                    setSelectedSubCategory(undefined)
+
+                                    router.setParams({ subCategory: undefined })
+                                } else {
+                                    setSelectedSubCategory(selected)
+
+                                    router.setParams({ subCategory: selected.id })
+                                }
+                            } else {
+                                setSelectedSubCategory(selected)
+
+                                router.setParams({ subCategory: selected.id })
+                            }
+                        }}
+                        selected={selectedSubCategory}
                         size="small"
+                        labelExtractor={item => item.name}
                     />
                 </View>
                 <View className="gap-2">
                     <StyledText className="px-2 text-lg font-jakarta-bold">Ordenar por</StyledText>
-                    <FlatList
-                        horizontal
-                        showsHorizontalScrollIndicator={false}
-                        data={SORT_BY_OPTIONS}
-                        extraData={orderBy?.id}
-                        keyExtractor={item => item.id.toString()}
-                        contentContainerClassName="gap-2 p-1"
-                        renderItem={({ item }) => {
-                            const isSelected = item.id === orderBy?.id
-                            return (
-                                <Pressable
-                                    key={item.id}
-                                    className={`
-                                        py-2 px-4 rounded-full active:bg-secondary elevation
-                                        ${isSelected ? "bg-secondary" : "bg-white border-gray-300"}
-                                    `}
-                                    onPress={() => setOrderBy(item)}
-                                >
-                                    <StyledText className={`text-lg`}>{item.label}</StyledText>
-                                </Pressable>
-                            )
-                        }}
+                    <HorizontalListSelector
+                        list={SORT_BY_OPTIONS ?? []}
+                        onSelect={item => setOrderBy(item)}
+                        selected={orderBy}
+                        labelExtractor={item => item.label}
+                        size="large"
                     />
                 </View>
                 <MinimumRatingSlider

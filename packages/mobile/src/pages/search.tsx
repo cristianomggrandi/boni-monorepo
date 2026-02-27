@@ -1,6 +1,6 @@
 import { Business, BusinessCategory } from "@boni/database/dist/generated/prisma/client"
-import { useNavigation } from "expo-router"
-import React, { use, useLayoutEffect, useState } from "react"
+import { useGlobalSearchParams, useNavigation, useRouter } from "expo-router"
+import React, { use, useEffect, useLayoutEffect, useState } from "react"
 import { View } from "react-native"
 import Animated, {
     Extrapolation,
@@ -11,11 +11,12 @@ import Animated, {
     useSharedValue,
 } from "react-native-reanimated"
 import { SafeAreaView } from "react-native-safe-area-context"
-import CategoryList from "../components/category-list"
+import HorizontalListSelector from "../components/horizontal-list-selector"
 import BusinessList from "../components/lists/business-list"
 import PageContainer from "../components/page-container"
 import { RouterBackButton } from "../components/page-header"
 import SearchBar from "../components/search-bar"
+import StyledText from "../components/styled/styled-text"
 import useUserDependentPromise from "../hooks/use-user-dependent-promise"
 import { CategoryWithSubcategories, Filters, getBusinesses, getCategories } from "../util/db"
 
@@ -41,12 +42,6 @@ function SearchHeader({ scrollY }: { scrollY: SharedValue<number> }) {
         return { left }
     })
 
-    // const animatedSearchBarStyle = useAnimatedStyle(() => {
-    //     const paddingVertical = interpolate(scrollY.value, [0, 60], [0, 0], Extrapolation.CLAMP)
-
-    //     return { paddingVertical }
-    // })
-
     return (
         <SafeAreaView className="h-24 w-full bg-background" edges={["top", "left", "right"]}>
             <View className="mx-5 flex-row items-center justify-between relative">
@@ -64,6 +59,8 @@ function SearchHeader({ scrollY }: { scrollY: SharedValue<number> }) {
 
 export default function Search() {
     const navigation = useNavigation()
+    const router = useRouter()
+    const globalParams = useGlobalSearchParams<{ category: string; subCategory: string }>()
 
     const scrollY = useSharedValue(0)
     const scrollHandler = useAnimatedScrollHandler({
@@ -90,28 +87,36 @@ export default function Search() {
     const [subCategories, setSubCategories] = useState<BusinessCategory[]>([])
     const [selectedSubCategory, setSelectedSubCategory] = useState<BusinessCategory>()
 
-    useLayoutEffect(() => {
-        if (selectedCategory) {
-            setSubCategories(selectedCategory.subcategories)
+    useEffect(() => {
+        if (categories) {
+            if (globalParams.category) {
+                const category = categories.find(c => c.id === Number(globalParams.category))
 
-            addFilter("category", selectedCategory.id.toString())
-        } else {
-            removeFilter("category")
-            setSubCategories([])
+                if (category) {
+                    setSelectedCategory(category)
+                    setSubCategories(category.subcategories)
+
+                    if (globalParams.subCategory) {
+                        setSelectedSubCategory(
+                            category.subcategories.find(
+                                c => c.id === Number(globalParams.subCategory)
+                            )
+                        )
+                    } else {
+                        setSelectedSubCategory(undefined)
+                    }
+                } else {
+                    setSelectedCategory(undefined)
+                    setSubCategories([])
+                    setSelectedSubCategory(undefined)
+                }
+            } else {
+                setSelectedCategory(undefined)
+                setSubCategories([])
+                setSelectedSubCategory(undefined)
+            }
         }
-
-        setSelectedSubCategory(undefined)
-    }, [selectedCategory])
-
-    useLayoutEffect(() => {
-        if (selectedSubCategory) {
-            addFilter("category", selectedSubCategory.id.toString())
-        } else if (selectedCategory) {
-            addFilter("category", selectedCategory.id.toString())
-        } else {
-            removeFilter("category")
-        }
-    }, [selectedSubCategory])
+    }, [categories, globalParams.category, globalParams.subCategory])
 
     useLayoutEffect(() => {
         setLoadingBusinesses(true)
@@ -133,25 +138,57 @@ export default function Search() {
     return (
         <PageContainer edges={[]} className="pt-1">
             <Animated.ScrollView onScroll={scrollHandler} scrollEventThrottle={16}>
+                <StyledText>{JSON.stringify(globalParams)}</StyledText>
                 {/* TODO: Checar se quero px-6 ou p-6 ou (px-6 + py-4) */}
-                <CategoryList
-                    categories={categories ?? []}
-                    onSelect={(selected: CategoryWithSubcategories) =>
-                        selectedCategory?.id === selected.id
-                            ? setSelectedCategory(undefined)
-                            : setSelectedCategory(selected)
-                    }
-                    selectedCategory={selectedCategory}
+                <HorizontalListSelector
+                    list={categories ?? []}
+                    onSelect={selected => {
+                        if (selectedCategory) {
+                            if (selectedCategory.id === selected.id) {
+                                setSelectedCategory(undefined)
+                                setSubCategories([])
+
+                                router.setParams({ category: undefined, subCategory: undefined })
+                            } else {
+                                setSelectedCategory(selected)
+                                setSubCategories(selectedCategory.subcategories)
+
+                                router.setParams({ category: selected.id, subCategory: undefined })
+                            }
+                        } else {
+                            setSelectedCategory(selected)
+                            setSubCategories(selected.subcategories)
+
+                            router.setParams({ category: selected.id, subCategory: undefined })
+                        }
+
+                        setSelectedSubCategory(undefined)
+                    }}
+                    selected={selectedCategory}
+                    labelExtractor={item => item.name}
                 />
-                <CategoryList
-                    categories={subCategories as BusinessCategory[]}
-                    onSelect={(selected: BusinessCategory) =>
-                        selectedSubCategory?.id === selected.id
-                            ? setSelectedSubCategory(undefined)
-                            : setSelectedSubCategory(selected)
-                    }
-                    selectedCategory={selectedSubCategory}
+                <HorizontalListSelector
+                    list={subCategories}
+                    onSelect={selected => {
+                        if (selectedSubCategory) {
+                            if (selectedSubCategory.id === selected.id) {
+                                setSelectedSubCategory(undefined)
+
+                                router.setParams({ subCategory: undefined })
+                            } else {
+                                setSelectedSubCategory(selected)
+
+                                router.setParams({ subCategory: selected.id })
+                            }
+                        } else {
+                            setSelectedSubCategory(selected)
+
+                            router.setParams({ subCategory: selected.id })
+                        }
+                    }}
+                    selected={selectedSubCategory}
                     size="small"
+                    labelExtractor={item => item.name}
                 />
                 <BusinessList list={businessList} isLoading={loadingBusinesses} />
             </Animated.ScrollView>
