@@ -1,6 +1,6 @@
 import Feather from "@expo/vector-icons/Feather"
 import React from "react"
-import { StyleProp, TextInputProps, ViewStyle } from "react-native"
+import { StyleProp, TextInput, TextInputProps, ViewStyle } from "react-native"
 import Animated, { AnimatedStyle } from "react-native-reanimated"
 import StyledTextInput from "./styled/styled-text-input"
 
@@ -9,6 +9,7 @@ export default function SearchBar({
     ...props
 }: TextInputProps & {
     containerStyle?: StyleProp<AnimatedStyle<StyleProp<ViewStyle>>>
+    ref?: React.RefObject<TextInput | null>
 }) {
     return (
         <Animated.View

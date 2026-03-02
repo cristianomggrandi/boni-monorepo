@@ -1,6 +1,6 @@
 import { Business, BusinessCategory } from "@boni/database/dist/generated/prisma/client"
-import { useNavigation } from "expo-router"
-import React, { use, useEffect, useLayoutEffect, useState } from "react"
+import { useFocusEffect, useGlobalSearchParams, useNavigation, useRouter } from "expo-router"
+import React, { use, useCallback, useEffect, useLayoutEffect, useState } from "react"
 import { View } from "react-native"
 import Animated, {
     Extrapolation,
@@ -22,6 +22,23 @@ import useSearchFiltersParams from "../stores/search-filters-params-store"
 import { CategoryWithSubcategories, getBusinesses, getCategories } from "../util/db"
 
 function SearchHeader({ scrollY }: { scrollY: SharedValue<number> }) {
+    const router = useRouter()
+    const { autoFocus } = useGlobalSearchParams<{ autoFocus?: string }>()
+
+    const textInputRef = React.useRef<any>(null)
+
+    useFocusEffect(
+        useCallback(() => {
+            if (autoFocus === "true") {
+                setTimeout(() => {
+                    textInputRef.current?.focus()
+                }, 150)
+
+                router.setParams({ autoFocus: "false" })
+            }
+        }, [autoFocus])
+    )
+
     const animatedHeaderStyle = useAnimatedStyle(() => {
         const width = interpolate(scrollY.value, [0, 60], [50, 0], Extrapolation.CLAMP)
 
@@ -49,9 +66,8 @@ function SearchHeader({ scrollY }: { scrollY: SharedValue<number> }) {
                 <Animated.View style={animatedHeaderStyle} className="">
                     <RouterBackButton />
                 </Animated.View>
-                {/* <SearchBar containerStyle={animatedSearchBarStyle} /> */}
                 <Animated.View style={animatedSearchBarContainerStyle} className="absolute right-0">
-                    <SearchBar containerStyle={{ paddingVertical: 4 }} />
+                    <SearchBar containerStyle={{ paddingVertical: 4 }} ref={textInputRef} />
                 </Animated.View>
             </View>
         </SafeAreaView>
@@ -60,6 +76,7 @@ function SearchHeader({ scrollY }: { scrollY: SharedValue<number> }) {
 
 export default function Search() {
     const navigation = useNavigation()
+    const router = useRouter()
     const { filters, addFilter, removeFilter } = useSearchFiltersParams()
 
     const scrollY = useSharedValue(0)

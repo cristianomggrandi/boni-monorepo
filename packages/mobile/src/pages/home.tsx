@@ -1,11 +1,9 @@
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons"
-import { Link, useRouter } from "expo-router"
+import { useRouter } from "expo-router"
 import { Suspense } from "react"
 import { Pressable, Text, View } from "react-native"
 import NextAppointment from "../components/cards/next-appointment"
 import PageContainer from "../components/page-container"
 import SearchBar from "../components/search-bar"
-import StyledIcon from "../components/styled/styled-icon"
 import StyledText from "../components/styled/styled-text"
 import useAuthStore from "../stores/auth-store"
 
@@ -15,29 +13,6 @@ export default function HomePage() {
 
     return (
         <PageContainer enableSafeSpace className="gap-2">
-            {/* <View className="p-2 flex-row justify-between">
-                <View className="flex-row">
-                    <Link href="/profile">
-                        <StyledIcon>
-                            <MaterialCommunityIcons
-                                name="face-woman-profile"
-                                size={24}
-                                color="black"
-                            />
-                        </StyledIcon>
-                    </Link>
-                </View>
-                <View className="flex-row gap-2">
-                    <Link href="/(favorites)/businesses">
-                        <StyledIcon>
-                            <MaterialCommunityIcons name="cards-heart" size={24} color="primary" />
-                        </StyledIcon>
-                    </Link>
-                    <StyledIcon>
-                        <MaterialCommunityIcons name="bell" size={24} color="black" />
-                    </StyledIcon>
-                </View>
-            </View> */}
             <View className="p-4 mb-4">
                 <View>
                     <StyledText className="uppercase text-sm font-semibold">
@@ -50,8 +25,13 @@ export default function HomePage() {
                     ) : null}
                 </View>
             </View>
-            <Pressable onPress={() => router.push(`/search`)} className="h-16 px-2">
-                <SearchBar onChangeText={query => router.push(`/search?search=${query}`)} />
+            <Pressable
+                onPress={() => {
+                    router.push({ pathname: `/search`, params: { autoFocus: "true" } })
+                }}
+                className="h-16 px-2"
+            >
+                <SearchBar editable={false} />
             </Pressable>
             <Suspense fallback={<Text>// TODO:</Text>}>
                 <NextAppointment />
