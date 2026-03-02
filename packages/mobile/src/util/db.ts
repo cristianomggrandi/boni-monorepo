@@ -1,7 +1,6 @@
 import { Business, Prisma } from "@boni/database/dist/generated/prisma/client"
 import api from "../api/boni-api"
-
-export type Filters = Record<string, string>
+import { SearchFilters } from "../stores/search-filters-params-store"
 
 export type CategoryWithSubcategories = Prisma.BusinessCategoryGetPayload<{
     include: { subcategories: true }
@@ -29,9 +28,13 @@ export async function getSubCategories(categoryId: number) {
     }
 }
 
-export async function getBusinesses(filters: Filters): Promise<Business[]> {
+export async function getBusinesses(filters: SearchFilters): Promise<Business[]> {
     try {
-        const params = new URLSearchParams(filters)
+        const params = new URLSearchParams()
+
+        Object.entries(filters).forEach(([key, value]) => {
+            params.append(key, value)
+        })
 
         const response = await api.get("business?" + params.toString())
 

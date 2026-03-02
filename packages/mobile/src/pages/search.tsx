@@ -1,5 +1,5 @@
 import { Business, BusinessCategory } from "@boni/database/dist/generated/prisma/client"
-import { useGlobalSearchParams, useNavigation, useRouter } from "expo-router"
+import { useNavigation } from "expo-router"
 import React, { use, useEffect, useLayoutEffect, useState } from "react"
 import { View } from "react-native"
 import Animated, {
@@ -18,7 +18,8 @@ import { RouterBackButton } from "../components/page-header"
 import SearchBar from "../components/search-bar"
 import StyledText from "../components/styled/styled-text"
 import useUserDependentPromise from "../hooks/use-user-dependent-promise"
-import { CategoryWithSubcategories, Filters, getBusinesses, getCategories } from "../util/db"
+import useSearchFiltersParams from "../stores/search-filters-params-store"
+import { CategoryWithSubcategories, getBusinesses, getCategories } from "../util/db"
 
 function SearchHeader({ scrollY }: { scrollY: SharedValue<number> }) {
     const animatedHeaderStyle = useAnimatedStyle(() => {
@@ -59,8 +60,7 @@ function SearchHeader({ scrollY }: { scrollY: SharedValue<number> }) {
 
 export default function Search() {
     const navigation = useNavigation()
-    const router = useRouter()
-    const globalParams = useGlobalSearchParams<{ category: string; subCategory: string }>()
+    const { filters, addFilter, removeFilter } = useSearchFiltersParams()
 
     const scrollY = useSharedValue(0)
     const scrollHandler = useAnimatedScrollHandler({
@@ -73,14 +73,6 @@ export default function Search() {
     const categories = use(getCategoriesPromise)
     const [selectedCategory, setSelectedCategory] = useState<CategoryWithSubcategories>()
 
-    const [filters, setFilters] = useState<Filters>({})
-    const addFilter = (k: string, v: string) => setFilters(prev => ({ ...prev, [k]: v }))
-    const removeFilter = (k: string) =>
-        setFilters(prev => {
-            const { [k]: _, ...rest } = prev
-            return rest
-        })
-
     const [businessList, setBusinessList] = useState<Business[]>([])
     const [loadingBusinesses, setLoadingBusinesses] = useState(true)
 
@@ -89,18 +81,14 @@ export default function Search() {
 
     useEffect(() => {
         if (categories) {
-            if (globalParams.category) {
-                const category = categories.find(c => c.id === Number(globalParams.category))
-
+            if (filters.category) {
+                const category = categories.find(c => c.id === Number(filters.category))
                 if (category) {
                     setSelectedCategory(category)
                     setSubCategories(category.subcategories)
-
-                    if (globalParams.subCategory) {
+                    if (filters.subCategory) {
                         setSelectedSubCategory(
-                            category.subcategories.find(
-                                c => c.id === Number(globalParams.subCategory)
-                            )
+                            category.subcategories.find(c => c.id === Number(filters.subCategory))
                         )
                     } else {
                         setSelectedSubCategory(undefined)
@@ -116,7 +104,7 @@ export default function Search() {
                 setSelectedSubCategory(undefined)
             }
         }
-    }, [categories, globalParams.category, globalParams.subCategory])
+    }, [categories, filters.category, filters.subCategory])
 
     useLayoutEffect(() => {
         setLoadingBusinesses(true)
@@ -138,7 +126,7 @@ export default function Search() {
     return (
         <PageContainer edges={[]} className="pt-1">
             <Animated.ScrollView onScroll={scrollHandler} scrollEventThrottle={16}>
-                <StyledText>{JSON.stringify(globalParams)}</StyledText>
+                <StyledText>{JSON.stringify(filters)}</StyledText>
                 {/* TODO: Checar se quero px-6 ou p-6 ou (px-6 + py-4) */}
                 <HorizontalListSelector
                     list={categories ?? []}
@@ -147,21 +135,20 @@ export default function Search() {
                             if (selectedCategory.id === selected.id) {
                                 setSelectedCategory(undefined)
                                 setSubCategories([])
-
-                                router.setParams({ category: undefined, subCategory: undefined })
+                                removeFilter("category")
+                                removeFilter("subCategory")
                             } else {
                                 setSelectedCategory(selected)
                                 setSubCategories(selectedCategory.subcategories)
-
-                                router.setParams({ category: selected.id, subCategory: undefined })
+                                addFilter("category", selected.id)
+                                removeFilter("subCategory")
                             }
                         } else {
                             setSelectedCategory(selected)
                             setSubCategories(selected.subcategories)
-
-                            router.setParams({ category: selected.id, subCategory: undefined })
+                            addFilter("category", selected.id)
+                            removeFilter("subCategory")
                         }
-
                         setSelectedSubCategory(undefined)
                     }}
                     selected={selectedCategory}
@@ -173,17 +160,14 @@ export default function Search() {
                         if (selectedSubCategory) {
                             if (selectedSubCategory.id === selected.id) {
                                 setSelectedSubCategory(undefined)
-
-                                router.setParams({ subCategory: undefined })
+                                removeFilter("subCategory")
                             } else {
                                 setSelectedSubCategory(selected)
-
-                                router.setParams({ subCategory: selected.id })
+                                addFilter("subCategory", selected.id)
                             }
                         } else {
                             setSelectedSubCategory(selected)
-
-                            router.setParams({ subCategory: selected.id })
+                            addFilter("subCategory", selected.id)
                         }
                     }}
                     selected={selectedSubCategory}
