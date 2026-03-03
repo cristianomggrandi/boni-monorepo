@@ -16,7 +16,6 @@ import BusinessList from "../components/lists/business-list"
 import PageContainer from "../components/page-container"
 import { RouterBackButton } from "../components/page-header"
 import SearchBar from "../components/search-bar"
-import StyledText from "../components/styled/styled-text"
 import useUserDependentPromise from "../hooks/use-user-dependent-promise"
 import useSearchFiltersParams from "../stores/search-filters-params-store"
 import { CategoryWithSubcategories, getBusinesses, getCategories } from "../util/db"
@@ -143,8 +142,6 @@ export default function Search() {
     return (
         <PageContainer edges={[]} className="pt-1">
             <Animated.ScrollView onScroll={scrollHandler} scrollEventThrottle={16}>
-                <StyledText>{JSON.stringify(filters)}</StyledText>
-                {/* TODO: Checar se quero px-6 ou p-6 ou (px-6 + py-4) */}
                 <HorizontalListSelector
                     list={categories ?? []}
                     onSelect={selected => {

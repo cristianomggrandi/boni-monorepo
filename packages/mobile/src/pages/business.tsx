@@ -121,10 +121,10 @@ export default function BusinessPage() {
         try {
             if (newIsFavorite) {
                 await api.post("/favorite-businesses/" + id)
-                addFavoriteBusiness(+id)
+                addFavoriteBusiness(business!)
             } else {
                 await api.delete("/favorite-businesses/" + id)
-                removeFavoriteBusiness(+id)
+                removeFavoriteBusiness(business!)
             }
         } catch (error) {
             console.error("Failed to toggle favorite:", error)

@@ -18,7 +18,9 @@ import { Pressable } from "react-native"
 import "../../global.css"
 import { RouterBackButton, StackPageHeader } from "../components/page-header"
 import StyledIcon from "../components/styled/styled-icon"
+import StyledText from "../components/styled/styled-text"
 import useAuthStore from "../stores/auth-store"
+import useSearchFiltersParams from "../stores/search-filters-params-store"
 
 cssInterop(Image, { className: "style" })
 
@@ -56,6 +58,8 @@ export default function RootLayout() {
     const initializeAuthStore = useAuthStore(s => s.initialize)
     const segments = useSegments()
     const router = useRouter()
+
+    const resetFilters = useSearchFiltersParams(s => s.resetFilters)
 
     const [loaded, error] = useFonts({
         PlusJakarta: PlusJakartaSans_400Regular,
@@ -121,10 +125,12 @@ export default function RootLayout() {
             <Stack.Screen
                 name="search-filters"
                 options={{
-                    // presentation: "card",
-                    // animation: "slide_from_bottom",
-                    // headerShown: true,
                     title: "Filtros",
+                    headerRight: () => (
+                        <Pressable onPress={resetFilters}>
+                            <StyledText className="font-semibold text-sm">Limpar</StyledText>,
+                        </Pressable>
+                    ),
                 }}
             />
         </Stack>

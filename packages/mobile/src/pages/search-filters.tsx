@@ -44,6 +44,10 @@ function MinimumRatingSlider({
 }) {
     const [rating, setRating] = useState(minimumRating)
 
+    useEffect(() => {
+        if (!minimumRating) setRating(0)
+    }, [minimumRating])
+
     return (
         <View className="gap-2">
             <View className="px-2 flex-row justify-between">
@@ -108,10 +112,13 @@ export default function FiltersPage() {
         }
     }, [categories, filters.category, filters.subCategory])
 
+    useEffect(() => {
+        if (!filters.minimumRating) setMinimumRating(0)
+    }, [filters.minimumRating])
+
     return (
         <PageContainer className="">
             <View className="flex-1 gap-4">
-                <StyledText>{JSON.stringify(filters)}</StyledText>
                 <View>
                     <StyledText className="px-2 text-lg font-jakarta-bold">Categorias</StyledText>
                     <HorizontalListSelector
