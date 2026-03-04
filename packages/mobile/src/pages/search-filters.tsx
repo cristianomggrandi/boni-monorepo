@@ -1,7 +1,7 @@
 import { BusinessCategory } from "@boni/database/dist/generated/prisma/client"
 import FontAwesome from "@expo/vector-icons/FontAwesome"
 import Slider from "@react-native-community/slider"
-import { use, useEffect, useState } from "react"
+import { use, useEffect, useRef, useState } from "react"
 import { View } from "react-native"
 import HorizontalListSelector from "../components/horizontal-list-selector"
 import PageContainer from "../components/page-container"
@@ -42,27 +42,22 @@ function MinimumRatingSlider({
     minimumRating: number
     setMinimumRating: (value: number) => void
 }) {
-    const [rating, setRating] = useState(minimumRating)
-
-    useEffect(() => {
-        if (!minimumRating) setRating(0)
-    }, [minimumRating])
-
     return (
         <View className="gap-2">
             <View className="px-2 flex-row justify-between">
                 <StyledText className="text-lg font-jakarta-bold">Avaliação mínima</StyledText>
                 <StyledText className="text-lg font-jakarta-bold">
-                    {rating} <FontAwesome name="star" size={16} className="color-secondary" />
+                    {minimumRating}{" "}
+                    <FontAwesome name="star" size={16} className="color-secondary" />
                 </StyledText>
             </View>
             <Slider
                 style={{ marginTop: 12 }}
                 minimumValue={0}
                 maximumValue={5}
-                value={rating}
+                value={minimumRating}
                 step={0.1}
-                onValueChange={e => setRating(Number(e.toFixed(1)))}
+                onValueChange={e => setMinimumRating(Number(e.toFixed(1)))}
                 onSlidingComplete={e => setMinimumRating(Number(e.toFixed(1)))}
                 thumbTintColor={SECONDARY_COLOR}
                 minimumTrackTintColor={SECONDARY_COLOR}
@@ -72,11 +67,32 @@ function MinimumRatingSlider({
     )
 }
 
-export default function FiltersPage() {
+function OptionSeparator() {
+    return <View className="mx-2 border-y-hairline border-gray-300" />
+}
+
+export default function FiltersPage({ type }: { type: "Stack" | "Tab" }) {
     const { filters, addFilter, removeFilter } = useSearchFiltersParams()
 
     const [orderBy, setOrderBy] = useState(SORT_BY_OPTIONS[0])
     const [minimumRating, setMinimumRating] = useState(0)
+
+    const minimumRatingDebounceRef = useRef<{
+        timeout?: ReturnType<typeof setTimeout>
+        lastValue?: number
+    }>({})
+
+    const debouncedAddMinimumRatingFilter = (value: number) => {
+        if (minimumRatingDebounceRef.current.timeout)
+            clearTimeout(minimumRatingDebounceRef.current.timeout)
+
+        minimumRatingDebounceRef.current.lastValue = value
+
+        minimumRatingDebounceRef.current.timeout = setTimeout(() => {
+            addFilter("minimumRating", minimumRatingDebounceRef.current.lastValue)
+            minimumRatingDebounceRef.current.timeout = undefined
+        }, 100)
+    }
 
     const getCategoriesPromise = useUserDependentPromise(getCategories)
     const categories = use(getCategoriesPromise)
@@ -117,7 +133,7 @@ export default function FiltersPage() {
     }, [filters.minimumRating])
 
     return (
-        <PageContainer className="">
+        <PageContainer edges={type === "Tab" ? [] : undefined} className="">
             <View className="flex-1 gap-4">
                 <View>
                     <StyledText className="px-2 text-lg font-jakarta-bold">Categorias</StyledText>
@@ -168,6 +184,7 @@ export default function FiltersPage() {
                         labelExtractor={item => item.name}
                     />
                 </View>
+                <OptionSeparator />
                 <View className="gap-2">
                     <StyledText className="px-2 text-lg font-jakarta-bold">Ordenar por</StyledText>
                     <HorizontalListSelector
@@ -178,18 +195,20 @@ export default function FiltersPage() {
                         }}
                         selected={orderBy}
                         labelExtractor={item => item.label}
-                        size="large"
+                        size="large" // TODO: Large ou não?
                     />
                 </View>
+                <OptionSeparator />
                 <MinimumRatingSlider
                     minimumRating={minimumRating}
                     setMinimumRating={value => {
                         setMinimumRating(value)
-                        addFilter("minimumRating", value)
+                        debouncedAddMinimumRatingFilter(value)
                     }}
                 />
             </View>
-            <View className="px-4">
+            <OptionSeparator />
+            <View className="p-4">
                 <StyledButton className="bg-secondary rounded-full p-4" onPress={() => {}}>
                     <StyledText className="font-jakarta-bold">Mostrar resultados</StyledText>
                 </StyledButton>

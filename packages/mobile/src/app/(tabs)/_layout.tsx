@@ -15,7 +15,7 @@ export default function TabsLayout() {
                 headerShown: true,
                 headerShadowVisible: false,
                 header: TabPageHeader,
-                headerLeft: RouterBackButton,
+                headerLeft: () => <RouterBackButton />,
             }}
         >
             <Tabs.Screen
@@ -61,7 +61,7 @@ export default function TabsLayout() {
                 }}
             />
             <Tabs.Screen
-                name="search"
+                name="(search)"
                 options={{
                     tabBarIcon: ({ focused }) => (
                         <View
@@ -72,6 +72,7 @@ export default function TabsLayout() {
                     ),
                     tabBarLabel: ({ focused }) =>
                         focused ? <StyledText className="text-xs">Busca</StyledText> : null,
+                    headerShown: false,
                 }}
             />
             <Tabs.Screen
