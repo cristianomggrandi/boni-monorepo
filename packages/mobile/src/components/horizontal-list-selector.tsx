@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { FlatList, Pressable, View } from "react-native"
 import StyledText from "./styled/styled-text"
 
@@ -14,6 +15,7 @@ const getPadding = (size: Size) => {
             return "px-2 py-2"
     }
 }
+
 const getTextSize = (size: Size) => {
     switch (size) {
         case "large":
@@ -28,17 +30,21 @@ const getTextSize = (size: Size) => {
 export default function HorizontalListSelector<T extends { id: number }>({
     list,
     labelExtractor,
+    idExtractor,
     selected,
     onSelect,
     size = "normal",
 }: {
     list: T[]
     labelExtractor: (item: T) => string
-    selected?: T
-    onSelect: (selected: T) => void
+    idExtractor: (item: T) => string | number
+    selected?: string | number
+    onSelect: (selected: T | undefined) => void
     size?: "small" | "normal" | "large"
 }) {
     if (!list || !list.length) return null
+
+    const [value, setValue] = useState(selected)
 
     return (
         <View className="">
@@ -46,17 +52,27 @@ export default function HorizontalListSelector<T extends { id: number }>({
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 data={list}
-                extraData={selected?.id} // Tells FlatList to re-render when this ID changes
+                // extraData={selected?.id} // Tells FlatList to re-render when this ID changes
                 keyExtractor={item => item.id.toString()}
                 contentContainerClassName="gap-1 p-1"
                 renderItem={({ item }) => (
                     <Pressable
                         key={item.id}
                         className={`
-                            rounded-full active:bg-secondary elevation
-                            ${getPadding(size)} ${selected?.id === item.id ? "bg-secondary" : "bg-white"}
+                            rounded-full active:bg-secondary elevation ${getPadding(size)}
+                            ${value === idExtractor(item) ? "bg-secondary" : "bg-white"}
                         `}
-                        onPress={() => onSelect(item)}
+                        onPress={() => {
+                            const id = idExtractor(item)
+
+                            if (id === value) {
+                                setValue(undefined)
+                                onSelect(undefined)
+                            } else {
+                                setValue(id)
+                                onSelect(item)
+                            }
+                        }}
                     >
                         <StyledText className={getTextSize(size)}>
                             {labelExtractor(item)}

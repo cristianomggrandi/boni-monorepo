@@ -145,48 +145,44 @@ export default function Search() {
                 <HorizontalListSelector
                     list={categories ?? []}
                     onSelect={selected => {
-                        if (selectedCategory) {
-                            if (selectedCategory.id === selected.id) {
-                                setSelectedCategory(undefined)
-                                setSubCategories([])
-                                removeFilter("category")
-                                removeFilter("subCategory")
-                            } else {
-                                setSelectedCategory(selected)
-                                setSubCategories(selectedCategory.subcategories)
-                                addFilter("category", selected.id)
-                                removeFilter("subCategory")
-                            }
+                        if (!selected) {
+                            setSelectedCategory(undefined)
+                            setSubCategories([])
+                            removeFilter("category")
+                            removeFilter("subCategory")
                         } else {
                             setSelectedCategory(selected)
                             setSubCategories(selected.subcategories)
                             addFilter("category", selected.id)
                             removeFilter("subCategory")
                         }
+
                         setSelectedSubCategory(undefined)
                     }}
-                    selected={selectedCategory}
+                    selected={filters.category}
                     labelExtractor={item => item.name}
+                    idExtractor={item => item.id}
                 />
                 <HorizontalListSelector
                     list={subCategories}
                     onSelect={selected => {
-                        if (selectedSubCategory) {
-                            if (selectedSubCategory.id === selected.id) {
-                                setSelectedSubCategory(undefined)
-                                removeFilter("subCategory")
-                            } else {
-                                setSelectedSubCategory(selected)
-                                addFilter("subCategory", selected.id)
-                            }
-                        } else {
-                            setSelectedSubCategory(selected)
-                            addFilter("subCategory", selected.id)
-                        }
+                        // if (filters.subCategory) {
+                        //     if (filters.subCategory === selected.id) {
+                        //         setSelectedSubCategory(undefined)
+                        //         removeFilter("subCategory")
+                        //     } else {
+                        //         setSelectedSubCategory(selected)
+                        //         addFilter("subCategory", selected.id)
+                        //     }
+                        // } else {
+                        //     setSelectedSubCategory(selected)
+                        //     addFilter("subCategory", selected.id)
+                        // }
                     }}
-                    selected={selectedSubCategory}
+                    selected={filters.subCategory}
                     size="small"
                     labelExtractor={item => item.name}
+                    idExtractor={item => item.id}
                 />
                 <BusinessList list={businessList} isLoading={loadingBusinesses} />
             </Animated.ScrollView>

@@ -1,7 +1,7 @@
 import { BusinessCategory } from "@boni/database/dist/generated/prisma/client"
 import FontAwesome from "@expo/vector-icons/FontAwesome"
 import Slider from "@react-native-community/slider"
-import { use, useEffect, useRef, useState } from "react"
+import { use, useEffect, useLayoutEffect, useRef, useState } from "react"
 import { View } from "react-native"
 import HorizontalListSelector from "../components/horizontal-list-selector"
 import PageContainer from "../components/page-container"
@@ -42,23 +42,35 @@ function MinimumRatingSlider({
     minimumRating: number
     setMinimumRating: (value: number) => void
 }) {
+    const minimumRatingFilter = useSearchFiltersParams(s => s.filters.minimumRating)
+
+    const [rating, setRating] = useState(minimumRating)
+
+    useLayoutEffect(() => {
+        if (!minimumRatingFilter) setRating(0)
+    }, [minimumRatingFilter])
+
     return (
         <View className="gap-2">
             <View className="px-2 flex-row justify-between">
                 <StyledText className="text-lg font-jakarta-bold">Avaliação mínima</StyledText>
                 <StyledText className="text-lg font-jakarta-bold">
-                    {minimumRating}{" "}
-                    <FontAwesome name="star" size={16} className="color-secondary" />
+                    {rating} <FontAwesome name="star" size={16} className="color-secondary" />
                 </StyledText>
             </View>
             <Slider
                 style={{ marginTop: 12 }}
                 minimumValue={0}
                 maximumValue={5}
-                value={minimumRating}
+                value={rating}
                 step={0.1}
-                onValueChange={e => setMinimumRating(Number(e.toFixed(1)))}
-                onSlidingComplete={e => setMinimumRating(Number(e.toFixed(1)))}
+                onValueChange={e => setRating(Number(e.toFixed(1)))}
+                onSlidingComplete={e => {
+                    const rating = Number(e.toFixed(1))
+
+                    setMinimumRating(rating)
+                    setRating(rating)
+                }}
                 thumbTintColor={SECONDARY_COLOR}
                 minimumTrackTintColor={SECONDARY_COLOR}
                 maximumTrackTintColor={PRIMARY_COLOR}
@@ -128,60 +140,42 @@ export default function FiltersPage({ type }: { type: "Stack" | "Tab" }) {
         }
     }, [categories, filters.category, filters.subCategory])
 
-    useEffect(() => {
-        if (!filters.minimumRating) setMinimumRating(0)
-    }, [filters.minimumRating])
-
     return (
         <PageContainer edges={type === "Tab" ? [] : undefined} className="">
+            <StyledText>{JSON.stringify(filters)}</StyledText>
             <View className="flex-1 gap-4">
                 <View>
                     <StyledText className="px-2 text-lg font-jakarta-bold">Categorias</StyledText>
                     <HorizontalListSelector
                         list={categories ?? []}
                         onSelect={selected => {
-                            if (selectedCategory) {
-                                if (selectedCategory.id === selected.id) {
-                                    setSelectedCategory(undefined)
-                                    setSubCategories([])
-                                    removeFilter("category")
-                                    removeFilter("subCategory")
-                                } else {
-                                    setSelectedCategory(selected)
-                                    setSubCategories(selectedCategory.subcategories)
-                                    addFilter("category", selected.id)
-                                    removeFilter("subCategory")
-                                }
+                            if (!selected) {
+                                setSubCategories([])
+                                removeFilter("category")
                             } else {
-                                setSelectedCategory(selected)
                                 setSubCategories(selected.subcategories)
                                 addFilter("category", selected.id)
-                                removeFilter("subCategory")
                             }
-                            setSelectedSubCategory(undefined)
+
+                            removeFilter("subCategory")
                         }}
-                        selected={selectedCategory}
+                        selected={filters.category}
                         labelExtractor={item => item.name}
+                        idExtractor={item => item.id}
                     />
                     <HorizontalListSelector
                         list={subCategories}
                         onSelect={selected => {
-                            if (selectedSubCategory) {
-                                if (selectedSubCategory.id === selected.id) {
-                                    setSelectedSubCategory(undefined)
-                                    removeFilter("subCategory")
-                                } else {
-                                    setSelectedSubCategory(selected)
-                                    addFilter("subCategory", selected.id)
-                                }
+                            if (!selected) {
+                                removeFilter("subCategory")
                             } else {
-                                setSelectedSubCategory(selected)
                                 addFilter("subCategory", selected.id)
                             }
                         }}
-                        selected={selectedSubCategory}
+                        selected={filters.subCategory}
                         size="small"
                         labelExtractor={item => item.name}
+                        idExtractor={item => item.id}
                     />
                 </View>
                 <OptionSeparator />
@@ -190,21 +184,18 @@ export default function FiltersPage({ type }: { type: "Stack" | "Tab" }) {
                     <HorizontalListSelector
                         list={SORT_BY_OPTIONS ?? []}
                         onSelect={item => {
-                            setOrderBy(item)
-                            addFilter("orderBy", item.id)
+                            if (!item) removeFilter("orderBy")
+                            else addFilter("orderBy", item.id)
                         }}
-                        selected={orderBy}
+                        selected={filters.orderBy}
                         labelExtractor={item => item.label}
-                        size="large" // TODO: Large ou não?
+                        idExtractor={item => item.id}
                     />
                 </View>
                 <OptionSeparator />
                 <MinimumRatingSlider
                     minimumRating={minimumRating}
-                    setMinimumRating={value => {
-                        setMinimumRating(value)
-                        debouncedAddMinimumRatingFilter(value)
-                    }}
+                    setMinimumRating={value => debouncedAddMinimumRatingFilter(value)}
                 />
             </View>
             <OptionSeparator />
