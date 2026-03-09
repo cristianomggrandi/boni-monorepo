@@ -67,29 +67,6 @@ function ListHeader({ business }: { business: BusinessType }) {
     )
 }
 
-function ServiceGroupSelector({
-    business,
-    selectedGroup,
-    onSelectServiceGroup,
-}: {
-    business: BusinessType
-    selectedGroup?: number
-    onSelectServiceGroup: (id: number, index: number) => void
-}) {
-    return (
-        <HorizontalListSelector
-            list={business.serviceGroups}
-            idExtractor={group => group.id}
-            onSelect={(group, index) => onSelectServiceGroup(group.id, index)}
-            selected={selectedGroup}
-            labelExtractor={group => group.name}
-            size="large"
-            selectedColor="primary"
-            className="bg-background py-1 px-3"
-        />
-    )
-}
-
 // TODO: Decidir se coloca ou não dentro de Search para que tenha a TabBar ou se deixa sem (do jeito que está)
 
 function BusinessPageFavoriteIcon({ business }: { business: BusinessType }) {
@@ -170,18 +147,22 @@ export default function BusinessPage() {
                     data={[business.serviceGroups[0], ...business.serviceGroups]}
                     renderItem={({ item, index }) =>
                         index === 0 ? (
-                            <ServiceGroupSelector
-                                key="service-group-selector"
-                                business={business}
-                                selectedGroup={selectedGroup}
-                                onSelectServiceGroup={(id, index) => {
-                                    setSelectedGroup(id)
+                            <HorizontalListSelector
+                                list={business.serviceGroups}
+                                idExtractor={group => group.id}
+                                onSelect={(group, index) => {
+                                    setSelectedGroup(group.id)
                                     listRef.current?.scrollToIndex({
                                         index: index + 1,
                                         animated: true,
                                         viewOffset: 50,
                                     })
                                 }}
+                                selected={selectedGroup}
+                                labelExtractor={group => group.name}
+                                size="large"
+                                selectedColor="primary"
+                                className="bg-background py-1 px-3"
                             />
                         ) : (
                             <View className="gap-2 p-4 bg-background">
