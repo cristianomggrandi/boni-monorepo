@@ -12,7 +12,7 @@ export default function HomePage() {
     const user = useAuthStore(s => s.user)
 
     return (
-        <PageContainer enableSafeSpace className="gap-2">
+        <PageContainer className="gap-2 pt-10">
             <View className="p-4 mb-4">
                 <View>
                     <StyledText className="uppercase text-sm font-semibold">
@@ -27,7 +27,7 @@ export default function HomePage() {
             </View>
             <Pressable
                 onPress={() => {
-                    router.push({ pathname: `/search`, params: { autoFocus: "true" } })
+                    router.push({ pathname: `/(tabs)/(search)`, params: { autoFocus: "true" } })
                 }}
                 className="h-16 px-2"
             >

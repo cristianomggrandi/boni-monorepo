@@ -127,7 +127,7 @@ function BookingsList() {
 
 export default function BookingsPage() {
     return (
-        <PageContainer enableSafeSpace className="gap-2">
+        <PageContainer className="gap-2">
             <Suspense fallback={<Text>// TODO:</Text>}>
                 <BookingsList />
             </Suspense>

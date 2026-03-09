@@ -1,3 +1,4 @@
+import StyledText from "@/src/components/styled/styled-text"
 import {
     createMaterialTopTabNavigator,
     MaterialTopTabNavigationEventMap,
@@ -18,8 +19,42 @@ export const MaterialTopTabs = withLayoutContext<
 export default function FavoritesLayout() {
     return (
         <MaterialTopTabs screenOptions={{ tabBarIndicatorStyle: { backgroundColor: "#D2DB76" } }}>
-            <MaterialTopTabs.Screen name="businesses" options={{ title: "Estabelecimentos" }} />
-            <MaterialTopTabs.Screen name="services" options={{ title: "Serviços" }} />
+            <MaterialTopTabs.Screen
+                name="businesses"
+                options={{
+                    title: "Estabelecimentos",
+                    tabBarLabel: ({ children, focused }) => (
+                        <StyledText
+                            className={
+                                "transition-all duration-300 " +
+                                (focused
+                                    ? "font-semibold color-secondary" // TODO: Testar color-dark
+                                    : "font-semibold color-black opacity-50")
+                            }
+                        >
+                            {children}
+                        </StyledText>
+                    ),
+                }}
+            />
+            <MaterialTopTabs.Screen
+                name="services"
+                options={{
+                    title: "Serviços",
+                    tabBarLabel: ({ children, focused }) => (
+                        <StyledText
+                            className={
+                                "transition-all duration-300 " +
+                                (focused
+                                    ? "font-semibold color-secondary" // TODO: Testar color-dark
+                                    : "font-semibold color-black opacity-50")
+                            }
+                        >
+                            {children}
+                        </StyledText>
+                    ),
+                }}
+            />
         </MaterialTopTabs>
     )
 }

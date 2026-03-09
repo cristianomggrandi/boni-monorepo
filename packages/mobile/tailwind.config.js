@@ -1,4 +1,4 @@
-import { BACKGROUND_COLOR, PRIMARY_COLOR, SECONDARY_COLOR } from "./src/util/styling"
+import { BACKGROUND_COLOR, DARK_COLOR, PRIMARY_COLOR, SECONDARY_COLOR } from "./src/util/styling"
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -11,6 +11,7 @@ module.exports = {
                 secondary: SECONDARY_COLOR,
                 // background: "#FCF8F8",
                 background: BACKGROUND_COLOR,
+                dark: DARK_COLOR,
             },
             fontFamily: {
                 sans: ["PlusJakarta"],
