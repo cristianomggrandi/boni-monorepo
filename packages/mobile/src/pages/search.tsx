@@ -18,7 +18,7 @@ import { RouterBackButton } from "../components/page-header"
 import SearchBar from "../components/search-bar"
 import useUserDependentPromise from "../hooks/use-user-dependent-promise"
 import useSearchFiltersParams from "../stores/search-filters-params-store"
-import { CategoryWithSubcategories, getBusinesses, getCategories } from "../util/db"
+import { getBusinesses, getCategories } from "../util/db"
 
 function SearchHeader({ scrollY }: { scrollY: SharedValue<number> }) {
     const router = useRouter()
@@ -87,40 +87,24 @@ export default function Search() {
 
     const getCategoriesPromise = useUserDependentPromise(getCategories)
     const categories = use(getCategoriesPromise)
-    const [selectedCategory, setSelectedCategory] = useState<CategoryWithSubcategories>()
 
     const [businessList, setBusinessList] = useState<Business[]>([])
     const [loadingBusinesses, setLoadingBusinesses] = useState(true)
 
     const [subCategories, setSubCategories] = useState<BusinessCategory[]>([])
-    const [selectedSubCategory, setSelectedSubCategory] = useState<BusinessCategory>()
 
     useEffect(() => {
         if (categories) {
             if (filters.category) {
                 const category = categories.find(c => c.id === Number(filters.category))
-                if (category) {
-                    setSelectedCategory(category)
-                    setSubCategories(category.subcategories)
-                    if (filters.subCategory) {
-                        setSelectedSubCategory(
-                            category.subcategories.find(c => c.id === Number(filters.subCategory))
-                        )
-                    } else {
-                        setSelectedSubCategory(undefined)
-                    }
-                } else {
-                    setSelectedCategory(undefined)
-                    setSubCategories([])
-                    setSelectedSubCategory(undefined)
-                }
+
+                if (category) setSubCategories(category.subcategories)
+                else setSubCategories([])
             } else {
-                setSelectedCategory(undefined)
                 setSubCategories([])
-                setSelectedSubCategory(undefined)
             }
         }
-    }, [categories, filters.category, filters.subCategory])
+    }, [categories, filters.category])
 
     useLayoutEffect(() => {
         setLoadingBusinesses(true)
@@ -141,23 +125,23 @@ export default function Search() {
 
     return (
         <PageContainer edges={[]} className="pt-1">
-            <Animated.ScrollView onScroll={scrollHandler} scrollEventThrottle={16}>
+            <Animated.ScrollView
+                onScroll={scrollHandler}
+                scrollEventThrottle={16}
+                contentContainerClassName="min-h-full"
+            >
                 <HorizontalListSelector
                     list={categories ?? []}
                     onSelect={selected => {
                         if (!selected) {
-                            setSelectedCategory(undefined)
                             setSubCategories([])
                             removeFilter("category")
                             removeFilter("subCategory")
                         } else {
-                            setSelectedCategory(selected)
                             setSubCategories(selected.subcategories)
                             addFilter("category", selected.id)
                             removeFilter("subCategory")
                         }
-
-                        setSelectedSubCategory(undefined)
                     }}
                     selected={filters.category}
                     labelExtractor={item => item.name}
@@ -166,18 +150,8 @@ export default function Search() {
                 <HorizontalListSelector
                     list={subCategories}
                     onSelect={selected => {
-                        // if (filters.subCategory) {
-                        //     if (filters.subCategory === selected.id) {
-                        //         setSelectedSubCategory(undefined)
-                        //         removeFilter("subCategory")
-                        //     } else {
-                        //         setSelectedSubCategory(selected)
-                        //         addFilter("subCategory", selected.id)
-                        //     }
-                        // } else {
-                        //     setSelectedSubCategory(selected)
-                        //     addFilter("subCategory", selected.id)
-                        // }
+                        if (!selected) removeFilter("subCategory")
+                        else addFilter("subCategory", selected.id)
                     }}
                     selected={filters.subCategory}
                     size="small"
