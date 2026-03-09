@@ -1,16 +1,14 @@
 import { Prisma } from "@boni/database/dist/generated/prisma/client"
-import Feather from "@expo/vector-icons/Feather"
 import FontAwesome from "@expo/vector-icons/FontAwesome"
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6"
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons"
 import { Image } from "expo-image"
-import { useLocalSearchParams } from "expo-router"
-import { useEffect, useState } from "react"
+import { useLocalSearchParams, useNavigation } from "expo-router"
+import { useEffect, useLayoutEffect, useState } from "react"
 import { Pressable, ScrollView, View } from "react-native"
 import api from "../api/boni-api"
 import FavoriteIcon from "../components/favorite-icon"
 import PageContainer from "../components/page-container"
-import StyledIcon from "../components/styled/styled-icon"
 import StyledText from "../components/styled/styled-text"
 import useFavoritesStore from "../stores/favorites-store"
 import { formatDuration, formatMoney } from "../util/formatting"
@@ -19,16 +17,12 @@ type ServiceType = Prisma.ServiceGetPayload<{
     include: { serviceGroup: { include: { business: true } } }
 }>
 
-export default function ServicePage() {
-    const { id } = useLocalSearchParams()
-
-    const [service, setService] = useState<ServiceType>()
-
+function ServicePageFavoriteIcon({ service }: { service: ServiceType }) {
     const favoriteServiceIds = useFavoritesStore(state => state.getFavoriteServiceIds())
     const addFavoriteService = useFavoritesStore(state => state.addFavoriteService)
     const removeFavoriteService = useFavoritesStore(state => state.removeFavoriteService)
 
-    const [isFavorite, setIsFavorite] = useState(favoriteServiceIds.includes(Number(id)))
+    const [isFavorite, setIsFavorite] = useState(favoriteServiceIds.includes(Number(service.id)))
 
     const handleFavoriteToggle = async () => {
         const newIsFavorite = !isFavorite
@@ -36,11 +30,11 @@ export default function ServicePage() {
 
         try {
             if (newIsFavorite) {
-                await api.post("/favorite-services/" + id)
-                addFavoriteService(+id)
+                await api.post("/favorite-services/" + service.id)
+                addFavoriteService(service)
             } else {
-                await api.delete("/favorite-services/" + id)
-                removeFavoriteService(+id)
+                await api.delete("/favorite-services/" + service.id)
+                removeFavoriteService(service)
             }
         } catch (error) {
             console.error("Failed to toggle favorite:", error)
@@ -49,8 +43,17 @@ export default function ServicePage() {
     }
 
     useEffect(() => {
-        setIsFavorite(favoriteServiceIds.includes(Number(id)))
+        setIsFavorite(favoriteServiceIds.includes(Number(service.id)))
     }, [favoriteServiceIds])
+
+    return <FavoriteIcon isFavorite={isFavorite} handleFavoriteToggle={handleFavoriteToggle} />
+}
+
+export default function ServicePage() {
+    const { id } = useLocalSearchParams()
+    const navigation = useNavigation()
+
+    const [service, setService] = useState<ServiceType>()
 
     useEffect(() => {
         api.get("service/" + id)
@@ -61,27 +64,26 @@ export default function ServicePage() {
             .catch(error => console.error(error))
     }, [])
 
+    useLayoutEffect(() => {
+        if (service)
+            navigation.setOptions({
+                headerRight: () => <ServicePageFavoriteIcon service={service} />,
+                title: service.name,
+            })
+    }, [service])
+
     if (!service) return null
 
     const business = service.serviceGroup.business
 
     return (
-        <PageContainer edges={["right", "left", "bottom", "top"]} className="p-0 h-full">
-            <View className="w-full flex-row items-center justify-between px-4">
-                <StyledIcon>
-                    <StyledIcon>
-                        <Feather name="arrow-left" size={24} color="black" />
-                    </StyledIcon>
-                </StyledIcon>
-                <StyledText className="font-jakarta-bold text-xl">{service.name}</StyledText>
-                <FavoriteIcon isFavorite={isFavorite} handleFavoriteToggle={handleFavoriteToggle} />
-            </View>
+        <PageContainer className="p-0 h-full">
             <View className="relative flex-1">
                 <View className="absolute">
                     <Image
                         className="w-full aspect-square bg-red-200"
                         source={
-                            // business.image ??
+                            // service.image ??
                             "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/14/e4/3b/b5/view-from-the-top.jpg?w=500&h=500&s=1"
                         }
                     />

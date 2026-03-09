@@ -1,4 +1,4 @@
-import { FlatList, Pressable, View } from "react-native"
+import { FlatList, Pressable, View, ViewProps } from "react-native"
 import StyledText from "./styled/styled-text"
 
 type Size = "small" | "normal" | "large"
@@ -33,28 +33,30 @@ export default function HorizontalListSelector<T extends { id: number }>({
     selected,
     onSelect,
     size = "normal",
-}: {
+    selectedColor,
+    ...props
+}: ViewProps & {
     list: T[]
     labelExtractor: (item: T) => string
     idExtractor: (item: T) => string | number
     selected?: string | number
-    onSelect: (selected: T | undefined) => void
+    onSelect: (selected: T, index: number) => void
     size?: "small" | "normal" | "large"
+    selectedColor?: string
 }) {
     if (!list || !list.length) return null
 
-    // controlled component: derive selected value directly from prop
-    // const value = selected
+    const selectedStyle = selectedColor ? "bg-" + selectedColor : "bg-secondary"
 
     return (
-        <View className="">
+        <View {...props}>
             <FlatList
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 data={list}
                 keyExtractor={item => item.id.toString()}
                 contentContainerClassName="gap-1 p-1"
-                renderItem={({ item }) => {
+                renderItem={({ item, index }) => {
                     const id = idExtractor(item)
                     const isActive = id === selected
 
@@ -62,16 +64,10 @@ export default function HorizontalListSelector<T extends { id: number }>({
                         <Pressable
                             key={item.id}
                             className={`
-                            rounded-full active:bg-secondary elevation ${getPadding(size)}
-                            ${isActive ? "bg-secondary" : "bg-white"}
+                            rounded-full active:${selectedStyle} elevation ${getPadding(size)}
+                            ${isActive ? selectedStyle : "bg-white"}
                         `}
-                            onPress={() => {
-                                if (isActive) {
-                                    onSelect(undefined)
-                                } else {
-                                    onSelect(item)
-                                }
-                            }}
+                            onPress={() => onSelect(item, index)}
                         >
                             <StyledText className={getTextSize(size)}>
                                 {labelExtractor(item)}

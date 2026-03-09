@@ -1,16 +1,15 @@
 import { Prisma } from "@boni/database/dist/generated/prisma/client"
-import Feather from "@expo/vector-icons/Feather"
 import FontAwesome from "@expo/vector-icons/FontAwesome"
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons"
 import { Image } from "expo-image"
-import { useLocalSearchParams } from "expo-router"
-import { useEffect, useRef, useState } from "react"
-import { Dimensions, FlatList, Pressable, ScrollView, View } from "react-native"
+import { useLocalSearchParams, useNavigation } from "expo-router"
+import { useEffect, useLayoutEffect, useRef, useState } from "react"
+import { FlatList, View } from "react-native"
 import api from "../api/boni-api"
 import { ServiceCard } from "../components/cards/service-card"
 import FavoriteIcon from "../components/favorite-icon"
+import HorizontalListSelector from "../components/horizontal-list-selector"
 import PageContainer from "../components/page-container"
-import StyledIcon from "../components/styled/styled-icon"
 import StyledText from "../components/styled/styled-text"
 import useFavoritesStore from "../stores/favorites-store"
 
@@ -78,53 +77,39 @@ function ServiceGroupSelector({
     onSelectServiceGroup: (id: number, index: number) => void
 }) {
     return (
-        <View className="bg-background">
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} className="p-2">
-                {business.serviceGroups
-                    // TODO: Corrigir scroll horizontal
-                    // .concat(business.serviceGroups)
-                    .map((group, index) => (
-                        <Pressable
-                            key={group.id}
-                            className={`
-                                elevation mx-1 py-3 px-4 rounded-full active:bg-primary 
-                                ${selectedGroup === group.id ? "bg-primary" : "bg-white"}
-                            `}
-                            onPress={() => onSelectServiceGroup(group.id, index)}
-                        >
-                            <StyledText className="font-semibold">{group.name}</StyledText>
-                        </Pressable>
-                    ))}
-            </ScrollView>
-        </View>
+        <HorizontalListSelector
+            list={business.serviceGroups}
+            idExtractor={group => group.id}
+            onSelect={(group, index) => onSelectServiceGroup(group.id, index)}
+            selected={selectedGroup}
+            labelExtractor={group => group.name}
+            size="large"
+            selectedColor="primary"
+            className="bg-background py-1 px-3"
+        />
     )
 }
 
-const WINDOW_WIDTH = Dimensions.get("window").width
-
 // TODO: Decidir se coloca ou não dentro de Search para que tenha a TabBar ou se deixa sem (do jeito que está)
 
-export default function BusinessPage() {
-    const { id } = useLocalSearchParams()
-
-    const [business, setBusiness] = useState<BusinessType>()
-
+function BusinessPageFavoriteIcon({ business }: { business: BusinessType }) {
     const favoriteBusinessIds = useFavoritesStore(state => state.getFavoriteBusinessIds())
     const addFavoriteBusiness = useFavoritesStore(state => state.addFavoriteBusiness)
     const removeFavoriteBusiness = useFavoritesStore(state => state.removeFavoriteBusiness)
 
-    const [isFavorite, setIsFavorite] = useState(favoriteBusinessIds.includes(Number(id)))
+    const [isFavorite, setIsFavorite] = useState(favoriteBusinessIds.includes(Number(business.id)))
+
     const handleFavoriteToggle = async () => {
         const newIsFavorite = !isFavorite
         setIsFavorite(newIsFavorite)
 
         try {
             if (newIsFavorite) {
-                await api.post("/favorite-businesses/" + id)
-                addFavoriteBusiness(business!)
+                await api.post("/favorite-businesses/" + business.id)
+                addFavoriteBusiness(business)
             } else {
-                await api.delete("/favorite-businesses/" + id)
-                removeFavoriteBusiness(business!)
+                await api.delete("/favorite-businesses/" + business.id)
+                removeFavoriteBusiness(business)
             }
         } catch (error) {
             console.error("Failed to toggle favorite:", error)
@@ -133,8 +118,17 @@ export default function BusinessPage() {
     }
 
     useEffect(() => {
-        setIsFavorite(favoriteBusinessIds.includes(Number(id)))
+        setIsFavorite(favoriteBusinessIds.includes(Number(business.id)))
     }, [favoriteBusinessIds])
+
+    return <FavoriteIcon isFavorite={isFavorite} handleFavoriteToggle={handleFavoriteToggle} />
+}
+
+export default function BusinessPage() {
+    const navigation = useNavigation()
+    const { id } = useLocalSearchParams()
+
+    const [business, setBusiness] = useState<BusinessType>()
 
     const [selectedGroup, setSelectedGroup] = useState<ServiceGroupType["id"]>()
 
@@ -145,22 +139,21 @@ export default function BusinessPage() {
             .catch(error => console.error(error))
     }, [])
 
+    useLayoutEffect(() => {
+        if (business)
+            navigation.setOptions({
+                headerRight: () => <BusinessPageFavoriteIcon business={business} />,
+                title: business.name,
+            })
+    }, [business])
+
     const listRef = useRef<FlatList<BusinessType["serviceGroups"][0]>>(null)
 
     // TODO:
     if (!business) return null
 
     return (
-        <PageContainer edges={["top", "left", "right", "bottom"]} className="gap-2 px-0">
-            <View className="w-full flex-row items-center justify-between px-4">
-                <StyledIcon>
-                    <StyledIcon>
-                        <Feather name="arrow-left" size={24} color="black" />
-                    </StyledIcon>
-                </StyledIcon>
-                <StyledText className="font-jakarta-bold text-xl">{business.name}</StyledText>
-                <FavoriteIcon isFavorite={isFavorite} handleFavoriteToggle={handleFavoriteToggle} />
-            </View>
+        <PageContainer className="gap-2 p-0">
             <View className="relative">
                 <View className="absolute">
                     <Image

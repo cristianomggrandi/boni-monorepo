@@ -102,11 +102,8 @@ export default function RootLayout() {
         >
             <Stack.Screen name="(auth)" options={{ animation: "fade", headerShown: false }} />
             <Stack.Screen name="(tabs)" options={{ animation: "fade", headerShown: false }} />
-            <Stack.Screen
-                name="business/[id]"
-                options={{ headerShown: false, animation: "fade" }}
-            />
-            <Stack.Screen name="service/[id]" options={{ headerShown: false, animation: "fade" }} />
+            <Stack.Screen name="business/[id]" options={{ animation: "fade" }} />
+            <Stack.Screen name="service/[id]" options={{ animation: "fade" }} />
             <Stack.Screen
                 name="(favorites)"
                 options={{

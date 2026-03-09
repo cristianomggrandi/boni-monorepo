@@ -149,15 +149,15 @@ export default function FiltersPage({ type }: { type: "Stack" | "Tab" }) {
                     <HorizontalListSelector
                         list={categories ?? []}
                         onSelect={selected => {
-                            if (!selected) {
+                            if (selected.id === filters.category) {
                                 setSubCategories([])
                                 removeFilter("category")
+                                removeFilter("subCategory")
                             } else {
                                 setSubCategories(selected.subcategories)
                                 addFilter("category", selected.id)
+                                removeFilter("subCategory")
                             }
-
-                            removeFilter("subCategory")
                         }}
                         selected={filters.category}
                         labelExtractor={item => item.name}
@@ -166,7 +166,7 @@ export default function FiltersPage({ type }: { type: "Stack" | "Tab" }) {
                     <HorizontalListSelector
                         list={subCategories}
                         onSelect={selected => {
-                            if (!selected) {
+                            if (selected.id === filters.subCategory) {
                                 removeFilter("subCategory")
                             } else {
                                 addFilter("subCategory", selected.id)
@@ -184,8 +184,11 @@ export default function FiltersPage({ type }: { type: "Stack" | "Tab" }) {
                     <HorizontalListSelector
                         list={SORT_BY_OPTIONS ?? []}
                         onSelect={item => {
-                            if (!item) removeFilter("orderBy")
-                            else addFilter("orderBy", item.id)
+                            if (item.id === filters.orderBy) {
+                                removeFilter("orderBy")
+                            } else {
+                                addFilter("orderBy", item.id)
+                            }
                         }}
                         selected={filters.orderBy}
                         labelExtractor={item => item.label}
