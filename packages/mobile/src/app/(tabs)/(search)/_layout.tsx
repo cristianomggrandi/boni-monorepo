@@ -23,7 +23,7 @@ export default function SearchLayout() {
                     title: "Filtros",
                     headerRight: () => (
                         <Pressable onPress={resetFilters}>
-                            <StyledText className="font-semibold text-sm">Limpar</StyledText>,
+                            <StyledText className="font-semibold text-sm">Limpar</StyledText>
                         </Pressable>
                     ),
                 }}
