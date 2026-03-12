@@ -23,6 +23,8 @@ interface IFavoritesStore {
 export const JWT_KEY = "boni_jwt_token"
 export const REFRESH_TOKEN_KEY = "boni_refresh_token"
 
+// ALTERAR GETTERS PARA ASYNC QUE RETONA A LISTA SALVA OU BUSCA SE NÃO ESTIVER SALVA
+
 const useFavoritesStore = create<IFavoritesStore>((set, get) => ({
     favoriteBusinesses: [],
     favoriteBusinessIds: [],
@@ -71,7 +73,6 @@ const useFavoritesStore = create<IFavoritesStore>((set, get) => ({
             const [businessResponse, serviceResponse] = await Promise.all([
                 api.get("/favorite-businesses"),
                 api.get("/favorite-services"),
-                // Promise.resolve(new Promise(resolve => setTimeout(resolve, 3000))),
             ])
 
             set({

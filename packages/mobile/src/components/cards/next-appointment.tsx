@@ -30,8 +30,6 @@ async function getNextAppointment(): Promise<Appointment | null> {
     try {
         const response = await api.get("appointments/next")
 
-        await new Promise(resolve => setTimeout(resolve, 2000))
-
         return response.data
     } catch (error) {
         console.log("APPOINTMENT ERROR:", error)

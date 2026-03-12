@@ -10,7 +10,7 @@ export default function FavoriteBusinessesPage() {
     return (
         <PageContainer className="">
             <ScrollView>
-                <BusinessList list={favoriteBusinesses} isLoading={isLoadingFavorites} isCompact />
+                <BusinessList list={favoriteBusinesses} isCompact />
             </ScrollView>
         </PageContainer>
     )

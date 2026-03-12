@@ -6,6 +6,8 @@ export type CategoryWithSubcategories = Prisma.BusinessCategoryGetPayload<{
     include: { subcategories: true }
 }>
 
+const stall = async (time: number) => new Promise(resolve => setTimeout(resolve, time ?? 200000))
+
 export async function getCategories(): Promise<CategoryWithSubcategories[]> {
     try {
         const response = await api.get("categories")

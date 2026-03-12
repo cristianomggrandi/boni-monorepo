@@ -21,7 +21,6 @@ import Animated, {
 import { SafeAreaView } from "react-native-safe-area-context"
 import HorizontalListSelector from "../components/horizontal-list-selector"
 import BusinessList from "../components/lists/business-list"
-import LoadingSpinner from "../components/loading-spinner"
 import PageContainer from "../components/page-container"
 import { RouterBackButton } from "../components/page-header"
 import SearchBar from "../components/search-bar"
@@ -173,21 +172,45 @@ export default function SearchPage() {
             >
                 <Suspense
                     fallback={
-                        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                            <View className="p-1 flex-row gap-1">
-                                <StyledSkeleton width={96} height={36} radius={"round"} />
-                                <StyledSkeleton width={96} height={36} radius={"round"} />
-                                <StyledSkeleton width={96} height={36} radius={"round"} />
-                                <StyledSkeleton width={96} height={36} radius={"round"} />
-                                <StyledSkeleton width={96} height={36} radius={"round"} />
-                                <StyledSkeleton width={96} height={36} radius={"round"} />
-                            </View>
+                        <ScrollView
+                            horizontal
+                            showsHorizontalScrollIndicator={false}
+                            contentContainerClassName="p-1 flex-row gap-1"
+                        >
+                            <StyledSkeleton width={96} height={36} radius={"round"} />
+                            <StyledSkeleton width={96} height={36} radius={"round"} />
+                            <StyledSkeleton width={96} height={36} radius={"round"} />
+                            <StyledSkeleton width={96} height={36} radius={"round"} />
+                            <StyledSkeleton width={96} height={36} radius={"round"} />
+                            <StyledSkeleton width={96} height={36} radius={"round"} />
                         </ScrollView>
                     }
                 >
                     <BusinessCategoryList getCategoriesPromise={getCategoriesPromise} />
                 </Suspense>
-                <Suspense fallback={<LoadingSpinner />}>
+                <Suspense
+                    fallback={
+                        <View>
+                            <View className="gap-4 p-2 mt-2">
+                                <View className="flex-row items-center justify-between">
+                                    <StyledSkeleton height={40} width={"80%"} />
+                                    <StyledSkeleton height={48} width={48} radius={"round"} />
+                                </View>
+                            </View>
+                            <ScrollView
+                                showsVerticalScrollIndicator={false}
+                                contentContainerClassName="pt-2 pb-4 px-2 gap-2"
+                            >
+                                <StyledSkeleton width={"100%"} height={108} radius={12} />
+                                <StyledSkeleton width={"100%"} height={108} radius={12} />
+                                <StyledSkeleton width={"100%"} height={108} radius={12} />
+                                <StyledSkeleton width={"100%"} height={108} radius={12} />
+                                <StyledSkeleton width={"100%"} height={108} radius={12} />
+                                <StyledSkeleton width={"100%"} height={108} radius={12} />
+                            </ScrollView>
+                        </View>
+                    }
+                >
                     <BusinessList list={getBusinessPromise} />
                 </Suspense>
             </Animated.ScrollView>

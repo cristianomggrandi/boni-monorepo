@@ -18,7 +18,12 @@ export default function BusinessCard({
         <Pressable
             onPress={() => router.push({ pathname: "/business/[id]", params: { id: business.id } })}
         >
-            <View className="rounded-2xl bg-white border-0 p-2 justify-center gap-2 flex-row elevation">
+            <View
+                className={
+                    (isCompact ? "h-28" : "h-32") +
+                    " rounded-2xl bg-white border-0 p-2 justify-center gap-2 flex-row elevation"
+                }
+            >
                 <View>
                     {business.image ? (
                         <Image
