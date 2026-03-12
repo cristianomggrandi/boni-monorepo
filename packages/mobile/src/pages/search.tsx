@@ -89,20 +89,10 @@ function Search({
     getBusinessPromise: Promise<Business[]>
     getCategoriesPromise: Promise<CategoryWithSubcategories[]>
 }) {
-    const navigation = useNavigation()
     const { filters, addFilter, removeFilter } = useSearchFiltersParams()
 
-    const scrollY = useSharedValue(0)
-    const scrollHandler = useAnimatedScrollHandler({
-        onScroll: event => {
-            scrollY.value = event.contentOffset.y
-        },
-    })
-
     const categories = use(getCategoriesPromise)
-
     const businessList = use(getBusinessPromise)
-    const [loadingBusinesses, setLoadingBusinesses] = useState(false)
 
     const [subCategories, setSubCategories] = useState<BusinessCategory[]>([])
 
@@ -119,11 +109,61 @@ function Search({
         }
     }, [categories, filters.category])
 
+    return (
+        <>
+            <HorizontalListSelector
+                list={categories ?? []}
+                onSelect={selected => {
+                    if (!selected) {
+                        setSubCategories([])
+                        removeFilter("category")
+                        removeFilter("subCategory")
+                    } else {
+                        setSubCategories(selected.subcategories)
+                        addFilter("category", selected.id)
+                        removeFilter("subCategory")
+                    }
+                }}
+                selected={filters.category}
+                labelExtractor={item => item.name}
+                idExtractor={item => item.id}
+            />
+            <HorizontalListSelector
+                list={subCategories}
+                onSelect={selected => {
+                    if (!selected) removeFilter("subCategory")
+                    else addFilter("subCategory", selected.id)
+                }}
+                selected={filters.subCategory}
+                size="small"
+                labelExtractor={item => item.name}
+                idExtractor={item => item.id}
+            />
+            <BusinessList list={businessList} />
+        </>
+    )
+}
+
+export default function SearchPage() {
+    const navigation = useNavigation()
+
+    const filters = useSearchFiltersParams(s => s.filters)
+
+    const scrollY = useSharedValue(0)
+    const scrollHandler = useAnimatedScrollHandler({
+        onScroll: event => {
+            scrollY.value = event.contentOffset.y
+        },
+    })
+
     useLayoutEffect(() => {
         navigation.setOptions({
             header: () => <SearchHeader scrollY={scrollY} />,
         })
     }, [])
+
+    const getBusinessPromise = useMemo(() => getBusinesses(filters), [filters])
+    const getCategoriesPromise = useUserDependentPromise(getCategories)
 
     return (
         <PageContainer edges={[]} className="pt-1">
@@ -132,52 +172,13 @@ function Search({
                 scrollEventThrottle={16}
                 contentContainerClassName="min-h-full"
             >
-                <HorizontalListSelector
-                    list={categories ?? []}
-                    onSelect={selected => {
-                        if (!selected) {
-                            setSubCategories([])
-                            removeFilter("category")
-                            removeFilter("subCategory")
-                        } else {
-                            setSubCategories(selected.subcategories)
-                            addFilter("category", selected.id)
-                            removeFilter("subCategory")
-                        }
-                    }}
-                    selected={filters.category}
-                    labelExtractor={item => item.name}
-                    idExtractor={item => item.id}
-                />
-                <HorizontalListSelector
-                    list={subCategories}
-                    onSelect={selected => {
-                        if (!selected) removeFilter("subCategory")
-                        else addFilter("subCategory", selected.id)
-                    }}
-                    selected={filters.subCategory}
-                    size="small"
-                    labelExtractor={item => item.name}
-                    idExtractor={item => item.id}
-                />
-                <BusinessList list={businessList} isLoading={loadingBusinesses} />
+                <Suspense fallback={<LoadingSpinner />}>
+                    <Search
+                        getBusinessPromise={getBusinessPromise}
+                        getCategoriesPromise={getCategoriesPromise}
+                    />
+                </Suspense>
             </Animated.ScrollView>
         </PageContainer>
-    )
-}
-
-export default function SearchPage() {
-    const filters = useSearchFiltersParams(s => s.filters)
-
-    const getBusinessPromise = useMemo(() => getBusinesses(filters), [filters])
-    const getCategoriesPromise = useUserDependentPromise(getCategories)
-
-    return (
-        <Suspense fallback={<LoadingSpinner />}>
-            <Search
-                getBusinessPromise={getBusinessPromise}
-                getCategoriesPromise={getCategoriesPromise}
-            />
-        </Suspense>
     )
 }
