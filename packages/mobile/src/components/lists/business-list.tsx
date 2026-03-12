@@ -2,19 +2,19 @@ import { Business } from "@boni/database/dist/generated/prisma/client"
 import Ionicons from "@expo/vector-icons/Ionicons"
 import { FlashList } from "@shopify/flash-list"
 import { useRouter } from "expo-router"
+import { use } from "react"
 import { Pressable, View } from "react-native"
 import BusinessCard from "../cards/business-card"
 import StyledIcon from "../styled/styled-icon"
 import StyledText from "../styled/styled-text"
 
-export default function BusinessList({
-    list,
-    isCompact = false,
-}: {
-    list: Business[]
+export default function BusinessList(props: {
+    list: Business[] | Promise<Business[]>
     isCompact?: boolean
 }) {
     const router = useRouter()
+
+    const list = props.list instanceof Promise ? use(props.list) : props.list
 
     return (
         <View className="flex-1">
@@ -33,7 +33,7 @@ export default function BusinessList({
                     // TODO: Remover 3 lists
                     data={[...list, ...list, ...list]}
                     renderItem={({ item }) => (
-                        <BusinessCard business={item} key={item.id} isCompact={isCompact} />
+                        <BusinessCard business={item} key={item.id} isCompact={props.isCompact} />
                     )}
                     keyExtractor={(item, index) => (item.id + 10 * index).toString()}
                     showsVerticalScrollIndicator={false}

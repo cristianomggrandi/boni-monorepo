@@ -1,4 +1,4 @@
-import { Business, BusinessCategory } from "@boni/database/dist/generated/prisma/client"
+import { BusinessCategory } from "@boni/database/dist/generated/prisma/client"
 import { useFocusEffect, useGlobalSearchParams, useNavigation, useRouter } from "expo-router"
 import React, {
     Suspense,
@@ -9,7 +9,7 @@ import React, {
     useMemo,
     useState,
 } from "react"
-import { View } from "react-native"
+import { ScrollView, View } from "react-native"
 import Animated, {
     Extrapolation,
     interpolate,
@@ -25,6 +25,7 @@ import LoadingSpinner from "../components/loading-spinner"
 import PageContainer from "../components/page-container"
 import { RouterBackButton } from "../components/page-header"
 import SearchBar from "../components/search-bar"
+import StyledSkeleton from "../components/styled/styled-skeleton"
 import useUserDependentPromise from "../hooks/use-user-dependent-promise"
 import useSearchFiltersParams from "../stores/search-filters-params-store"
 import { CategoryWithSubcategories, getBusinesses, getCategories } from "../util/db"
@@ -82,17 +83,14 @@ function SearchHeader({ scrollY }: { scrollY: SharedValue<number> }) {
     )
 }
 
-function Search({
-    getBusinessPromise,
+function BusinessCategoryList({
     getCategoriesPromise,
 }: {
-    getBusinessPromise: Promise<Business[]>
     getCategoriesPromise: Promise<CategoryWithSubcategories[]>
 }) {
     const { filters, addFilter, removeFilter } = useSearchFiltersParams()
 
     const categories = use(getCategoriesPromise)
-    const businessList = use(getBusinessPromise)
 
     const [subCategories, setSubCategories] = useState<BusinessCategory[]>([])
 
@@ -139,10 +137,11 @@ function Search({
                 labelExtractor={item => item.name}
                 idExtractor={item => item.id}
             />
-            <BusinessList list={businessList} />
         </>
     )
 }
+
+// function BusinessList
 
 export default function SearchPage() {
     const navigation = useNavigation()
@@ -172,11 +171,24 @@ export default function SearchPage() {
                 scrollEventThrottle={16}
                 contentContainerClassName="min-h-full"
             >
+                <Suspense
+                    fallback={
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                            <View className="p-1 flex-row gap-1">
+                                <StyledSkeleton width={96} height={36} radius={"round"} />
+                                <StyledSkeleton width={96} height={36} radius={"round"} />
+                                <StyledSkeleton width={96} height={36} radius={"round"} />
+                                <StyledSkeleton width={96} height={36} radius={"round"} />
+                                <StyledSkeleton width={96} height={36} radius={"round"} />
+                                <StyledSkeleton width={96} height={36} radius={"round"} />
+                            </View>
+                        </ScrollView>
+                    }
+                >
+                    <BusinessCategoryList getCategoriesPromise={getCategoriesPromise} />
+                </Suspense>
                 <Suspense fallback={<LoadingSpinner />}>
-                    <Search
-                        getBusinessPromise={getBusinessPromise}
-                        getCategoriesPromise={getCategoriesPromise}
-                    />
+                    <BusinessList list={getBusinessPromise} />
                 </Suspense>
             </Animated.ScrollView>
         </PageContainer>

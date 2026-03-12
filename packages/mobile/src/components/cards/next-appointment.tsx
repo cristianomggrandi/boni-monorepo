@@ -4,10 +4,10 @@ import { Prisma } from "@boni/database/dist/generated/prisma/client"
 import FontAwesome from "@expo/vector-icons/FontAwesome"
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5"
 import { Link, useRouter } from "expo-router"
-import { Skeleton } from "moti/skeleton"
 import { useEffect, useState } from "react"
 import { Pressable, View } from "react-native"
 import StyledIcon from "../styled/styled-icon"
+import StyledSkeleton from "../styled/styled-skeleton"
 import StyledText from "../styled/styled-text"
 
 const meses = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"]
@@ -43,7 +43,7 @@ function NextAppointmentCard({ nextAppointment }: { nextAppointment: Appointment
     if (!nextAppointment)
         return (
             <View className="m-2 w-auto">
-                <Skeleton height={96} width={"100%"} colors={["#ddd", "#fff"]} />
+                <StyledSkeleton height={96} width={"100%"} />
             </View>
         )
 
@@ -99,11 +99,11 @@ export default function NextAppointment() {
         return (
             <View className="gap-4 p-2 mt-2">
                 <View className="flex-row items-center justify-between">
-                    <Skeleton height={40} width={"80%"} colors={["#ddd", "#fff"]} />
-                    <Skeleton height={48} width={48} colors={["#ddd", "#fff"]} radius={"round"} />
+                    <StyledSkeleton height={40} width={"80%"} />
+                    <StyledSkeleton height={48} width={48} radius={"round"} />
                 </View>
                 <View className="w-auto">
-                    <Skeleton height={108} width={"100%"} colors={["#ddd", "#fff"]} />
+                    <StyledSkeleton height={108} width={"100%"} />
                 </View>
             </View>
         )
