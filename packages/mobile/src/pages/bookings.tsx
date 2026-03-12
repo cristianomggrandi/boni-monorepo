@@ -1,8 +1,9 @@
 import { Prisma } from "@boni/database/dist/generated/prisma/client"
 import { FlashList } from "@shopify/flash-list"
 import { Suspense, use } from "react"
-import { Button, ScrollView, Text, View } from "react-native"
+import { Button, ScrollView, View } from "react-native"
 import api from "../api/boni-api"
+import LoadingSpinner from "../components/loading-spinner"
 import PageContainer from "../components/page-container"
 import StyledText from "../components/styled/styled-text"
 import useUserDependentPromise from "../hooks/use-user-dependent-promise"
@@ -71,13 +72,15 @@ function BookingCard({ booking }: { booking: Booking }) {
     )
 }
 
-function BookingsList() {
-    const getBookingsPromise = useUserDependentPromise(getBookings)
-
+function BookingsList({
+    getBookingsPromise,
+}: {
+    getBookingsPromise: ReturnType<typeof getBookings>
+}) {
     const bookings = use(getBookingsPromise)
 
     // TODO:
-    if (!bookings)
+    if (!bookings?.finished.length && !bookings?.upcoming.length)
         return (
             <View>
                 <StyledText>Realize seu primeiro agendamento!</StyledText>
@@ -128,8 +131,8 @@ function BookingsList() {
 export default function BookingsPage() {
     return (
         <PageContainer className="gap-2">
-            <Suspense fallback={<Text>// TODO:</Text>}>
-                <BookingsList />
+            <Suspense fallback={<LoadingSpinner />}>
+                <BookingsList getBookingsPromise={useUserDependentPromise(getBookings)} />
             </Suspense>
         </PageContainer>
     )

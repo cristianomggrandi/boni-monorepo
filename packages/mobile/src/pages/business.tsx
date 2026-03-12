@@ -3,12 +3,13 @@ import FontAwesome from "@expo/vector-icons/FontAwesome"
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons"
 import { Image } from "expo-image"
 import { useLocalSearchParams, useNavigation } from "expo-router"
-import { useEffect, useLayoutEffect, useRef, useState } from "react"
+import { Suspense, use, useEffect, useLayoutEffect, useRef, useState } from "react"
 import { FlatList, View } from "react-native"
 import api from "../api/boni-api"
 import { ServiceCard } from "../components/cards/service-card"
 import FavoriteIcon from "../components/favorite-icon"
 import HorizontalListSelector from "../components/horizontal-list-selector"
+import LoadingSpinner from "../components/loading-spinner"
 import PageContainer from "../components/page-container"
 import StyledText from "../components/styled/styled-text"
 import useFavoritesStore from "../stores/favorites-store"
@@ -101,20 +102,12 @@ function BusinessPageFavoriteIcon({ business }: { business: BusinessType }) {
     return <FavoriteIcon isFavorite={isFavorite} handleFavoriteToggle={handleFavoriteToggle} />
 }
 
-export default function BusinessPage() {
+function Business({ businessPromise }: { businessPromise: Promise<BusinessType | null> }) {
     const navigation = useNavigation()
-    const { id } = useLocalSearchParams()
-
-    const [business, setBusiness] = useState<BusinessType>()
 
     const [selectedGroup, setSelectedGroup] = useState<ServiceGroupType["id"]>()
 
-    // TODO: use() hook?
-    useEffect(() => {
-        api.get("business/" + id)
-            .then(res => setBusiness(res.data))
-            .catch(error => console.error(error))
-    }, [])
+    const business = use(businessPromise)
 
     useLayoutEffect(() => {
         if (business)
@@ -126,7 +119,7 @@ export default function BusinessPage() {
 
     const listRef = useRef<FlatList<BusinessType["serviceGroups"][0]>>(null)
 
-    // TODO:
+    // TODO: Null é retornado quando tem erro na chamada
     if (!business) return null
 
     return (
@@ -190,5 +183,25 @@ export default function BusinessPage() {
                 {/* TODO: Scrollar até o final e ver se vai cortar */}
             </View>
         </PageContainer>
+    )
+}
+
+export default function BusinessPage() {
+    const { id } = useLocalSearchParams()
+
+    const [businessPromise] = useState(
+        api
+            .get<BusinessType>("business/" + id)
+            .then(res => res.data)
+            .catch(error => {
+                console.error(error)
+                return null
+            })
+    )
+
+    return (
+        <Suspense fallback={<LoadingSpinner />}>
+            <Business businessPromise={businessPromise} />
+        </Suspense>
     )
 }

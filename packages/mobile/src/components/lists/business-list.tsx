@@ -2,8 +2,9 @@ import { Business } from "@boni/database/dist/generated/prisma/client"
 import Ionicons from "@expo/vector-icons/Ionicons"
 import { FlashList } from "@shopify/flash-list"
 import { useRouter } from "expo-router"
-import { ActivityIndicator, Pressable, View } from "react-native"
+import { Pressable, View } from "react-native"
 import BusinessCard from "../cards/business-card"
+import LoadingSpinner from "../loading-spinner"
 import StyledIcon from "../styled/styled-icon"
 import StyledText from "../styled/styled-text"
 
@@ -33,9 +34,7 @@ export default function BusinessList({
             </View>
             <View className="flex-1">
                 {isLoading ? (
-                    <View className="flex-1 items-center justify-center">
-                        <ActivityIndicator size={80} className="fill-primary text-primary" />
-                    </View>
+                    <LoadingSpinner size={80} />
                 ) : (
                     <FlashList
                         // TODO: Remover 3 lists

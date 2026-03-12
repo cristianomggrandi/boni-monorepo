@@ -1,10 +1,11 @@
 import api from "@/src/api/boni-api"
-import useUserDependentPromise from "@/src/hooks/use-user-dependent-promise"
+import useAuthStore from "@/src/stores/auth-store"
 import { Prisma } from "@boni/database/dist/generated/prisma/client"
 import FontAwesome from "@expo/vector-icons/FontAwesome"
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5"
 import { Link, useRouter } from "expo-router"
-import { use } from "react"
+import { Skeleton } from "moti/skeleton"
+import { useEffect, useState } from "react"
 import { Pressable, View } from "react-native"
 import StyledIcon from "../styled/styled-icon"
 import StyledText from "../styled/styled-text"
@@ -21,11 +22,15 @@ function formatDate(dateString: string) {
     return [day, meses[month], `${hours}:${minutes}`]
 }
 
-async function getNextAppointment(): Promise<Prisma.AppointmentGetPayload<{
+type Appointment = Prisma.AppointmentGetPayload<{
     include: { services: true; business: true; worker: { include: { user: true } } }
-}> | null> {
+}>
+
+async function getNextAppointment(): Promise<Appointment | null> {
     try {
         const response = await api.get("appointments/next")
+
+        await new Promise(resolve => setTimeout(resolve, 2000))
 
         return response.data
     } catch (error) {
@@ -34,13 +39,74 @@ async function getNextAppointment(): Promise<Prisma.AppointmentGetPayload<{
     }
 }
 
+function NextAppointmentCard({ nextAppointment }: { nextAppointment: Appointment | null }) {
+    if (!nextAppointment)
+        return (
+            <View className="m-2 w-auto">
+                <Skeleton height={96} width={"100%"} colors={["#ddd", "#fff"]} />
+            </View>
+        )
+
+    const [day, month, time] = formatDate(nextAppointment.date.toString())
+
+    return (
+        <View className="rounded-2xl bg-white elevation p-4 justify-center gap-2">
+            <View className="flex-row gap-6 p-2">
+                <View className="bg-gray-200 rounded-2xl aspect-square items-center justify-center">
+                    <StyledText className="uppercase text-sm font-semibold text-gray-500 px-1">
+                        {month}
+                    </StyledText>
+                    <StyledText className="text-2xl font-jakarta-bold">{day}</StyledText>
+                </View>
+                <View className="flex-col flex-1">
+                    <StyledText className="text-lg font-jakarta-bold">
+                        {nextAppointment.services[0].name}
+                    </StyledText>
+                    <StyledText className="text-sm">
+                        {time} · {nextAppointment.worker.user.name}
+                    </StyledText>
+                    <View className="flex-row mt-2">
+                        <StyledText className="font-semibold uppercase text-3xl/3 text-secondary">
+                            ·
+                        </StyledText>
+                        <StyledText className="font-semibold text-sm uppercase px-1">
+                            Confirmado
+                        </StyledText>
+                    </View>
+                </View>
+                <View className="justify-center">
+                    <StyledIcon className="bg-secondary">
+                        {/* <Feather name="map" size={24} color="black" /> */}
+                        <FontAwesome name="map" size={24} color="black" />
+                    </StyledIcon>
+                </View>
+            </View>
+        </View>
+    )
+}
+
 export default function NextAppointment() {
     const router = useRouter()
 
-    const nextAppointmentPromise = useUserDependentPromise(getNextAppointment)
-    const nextAppointment = use(nextAppointmentPromise)
+    const token = useAuthStore(state => state.token)
+    const [nextAppointment, setNextAppointment] = useState<Appointment | null>(null)
 
-    if (!nextAppointment) return null
+    useEffect(() => {
+        if (token) getNextAppointment().then(setNextAppointment)
+    }, [token])
+
+    if (!nextAppointment)
+        return (
+            <View className="gap-4 p-2 mt-2">
+                <View className="flex-row items-center justify-between">
+                    <Skeleton height={40} width={"80%"} colors={["#ddd", "#fff"]} />
+                    <Skeleton height={48} width={48} colors={["#ddd", "#fff"]} radius={"round"} />
+                </View>
+                <View className="w-auto">
+                    <Skeleton height={108} width={"100%"} colors={["#ddd", "#fff"]} />
+                </View>
+            </View>
+        )
 
     const [day, month, time] = formatDate(nextAppointment.date.toString())
 

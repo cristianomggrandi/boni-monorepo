@@ -1,6 +1,5 @@
 import { useRouter } from "expo-router"
-import { Suspense } from "react"
-import { Pressable, Text, View } from "react-native"
+import { Pressable, View } from "react-native"
 import NextAppointment from "../components/cards/next-appointment"
 import PageContainer from "../components/page-container"
 import SearchBar from "../components/search-bar"
@@ -33,9 +32,7 @@ export default function HomePage() {
             >
                 <SearchBar editable={false} />
             </Pressable>
-            <Suspense fallback={<Text>// TODO:</Text>}>
-                <NextAppointment />
-            </Suspense>
+            <NextAppointment />
         </PageContainer>
     )
 }

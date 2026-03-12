@@ -1,6 +1,14 @@
 import { Business, BusinessCategory } from "@boni/database/dist/generated/prisma/client"
 import { useFocusEffect, useGlobalSearchParams, useNavigation, useRouter } from "expo-router"
-import React, { use, useCallback, useEffect, useLayoutEffect, useState } from "react"
+import React, {
+    Suspense,
+    use,
+    useCallback,
+    useEffect,
+    useLayoutEffect,
+    useMemo,
+    useState,
+} from "react"
 import { View } from "react-native"
 import Animated, {
     Extrapolation,
@@ -13,12 +21,13 @@ import Animated, {
 import { SafeAreaView } from "react-native-safe-area-context"
 import HorizontalListSelector from "../components/horizontal-list-selector"
 import BusinessList from "../components/lists/business-list"
+import LoadingSpinner from "../components/loading-spinner"
 import PageContainer from "../components/page-container"
 import { RouterBackButton } from "../components/page-header"
 import SearchBar from "../components/search-bar"
 import useUserDependentPromise from "../hooks/use-user-dependent-promise"
 import useSearchFiltersParams from "../stores/search-filters-params-store"
-import { getBusinesses, getCategories } from "../util/db"
+import { CategoryWithSubcategories, getBusinesses, getCategories } from "../util/db"
 
 function SearchHeader({ scrollY }: { scrollY: SharedValue<number> }) {
     const router = useRouter()
@@ -73,9 +82,14 @@ function SearchHeader({ scrollY }: { scrollY: SharedValue<number> }) {
     )
 }
 
-export default function Search() {
+function Search({
+    getBusinessPromise,
+    getCategoriesPromise,
+}: {
+    getBusinessPromise: Promise<Business[]>
+    getCategoriesPromise: Promise<CategoryWithSubcategories[]>
+}) {
     const navigation = useNavigation()
-    const router = useRouter()
     const { filters, addFilter, removeFilter } = useSearchFiltersParams()
 
     const scrollY = useSharedValue(0)
@@ -85,11 +99,10 @@ export default function Search() {
         },
     })
 
-    const getCategoriesPromise = useUserDependentPromise(getCategories)
     const categories = use(getCategoriesPromise)
 
-    const [businessList, setBusinessList] = useState<Business[]>([])
-    const [loadingBusinesses, setLoadingBusinesses] = useState(true)
+    const businessList = use(getBusinessPromise)
+    const [loadingBusinesses, setLoadingBusinesses] = useState(false)
 
     const [subCategories, setSubCategories] = useState<BusinessCategory[]>([])
 
@@ -105,17 +118,6 @@ export default function Search() {
             }
         }
     }, [categories, filters.category])
-
-    useLayoutEffect(() => {
-        setLoadingBusinesses(true)
-
-        getBusinesses(filters)
-            .then(list => {
-                setBusinessList(list)
-                setLoadingBusinesses(false)
-            })
-            .catch(err => console.log(err))
-    }, [filters])
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -161,5 +163,21 @@ export default function Search() {
                 <BusinessList list={businessList} isLoading={loadingBusinesses} />
             </Animated.ScrollView>
         </PageContainer>
+    )
+}
+
+export default function SearchPage() {
+    const filters = useSearchFiltersParams(s => s.filters)
+
+    const getBusinessPromise = useMemo(() => getBusinesses(filters), [filters])
+    const getCategoriesPromise = useUserDependentPromise(getCategories)
+
+    return (
+        <Suspense fallback={<LoadingSpinner />}>
+            <Search
+                getBusinessPromise={getBusinessPromise}
+                getCategoriesPromise={getCategoriesPromise}
+            />
+        </Suspense>
     )
 }
