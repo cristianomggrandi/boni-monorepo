@@ -3,7 +3,7 @@ import FontAwesome from "@expo/vector-icons/FontAwesome"
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons"
 import { Image } from "expo-image"
 import { useLocalSearchParams, useNavigation } from "expo-router"
-import { Suspense, use, useEffect, useLayoutEffect, useRef, useState } from "react"
+import { Suspense, use, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { FlatList, View } from "react-native"
 import api from "../api/boni-api"
 import { ServiceCard } from "../components/cards/service-card"
@@ -71,24 +71,19 @@ function ListHeader({ business }: { business: BusinessType }) {
 // TODO: Decidir se coloca ou não dentro de Search para que tenha a TabBar ou se deixa sem (do jeito que está)
 
 function BusinessPageFavoriteIcon({ business }: { business: BusinessType }) {
-    const favoriteBusinessIds = useFavoritesStore(state => state.getFavoriteBusinessIds())
+    const getFavoriteBusinessIds = useFavoritesStore(state => state.getFavoriteBusinessIds)
     const addFavoriteBusiness = useFavoritesStore(state => state.addFavoriteBusiness)
     const removeFavoriteBusiness = useFavoritesStore(state => state.removeFavoriteBusiness)
 
-    const [isFavorite, setIsFavorite] = useState(favoriteBusinessIds.includes(Number(business.id)))
+    const [isFavorite, setIsFavorite] = useState(false)
 
     const handleFavoriteToggle = async () => {
         const newIsFavorite = !isFavorite
         setIsFavorite(newIsFavorite)
 
         try {
-            if (newIsFavorite) {
-                await api.post("/favorite-businesses/" + business.id)
-                addFavoriteBusiness(business)
-            } else {
-                await api.delete("/favorite-businesses/" + business.id)
-                removeFavoriteBusiness(business)
-            }
+            if (newIsFavorite) addFavoriteBusiness(business)
+            else removeFavoriteBusiness(business)
         } catch (error) {
             console.error("Failed to toggle favorite:", error)
             setIsFavorite(!newIsFavorite)
@@ -96,8 +91,10 @@ function BusinessPageFavoriteIcon({ business }: { business: BusinessType }) {
     }
 
     useEffect(() => {
-        setIsFavorite(favoriteBusinessIds.includes(Number(business.id)))
-    }, [favoriteBusinessIds])
+        getFavoriteBusinessIds().then(favoriteBusinessIds =>
+            setIsFavorite(favoriteBusinessIds.includes(Number(business.id)))
+        )
+    }, [getFavoriteBusinessIds])
 
     return <FavoriteIcon isFavorite={isFavorite} handleFavoriteToggle={handleFavoriteToggle} />
 }
@@ -189,14 +186,16 @@ function Business({ businessPromise }: { businessPromise: Promise<BusinessType |
 export default function BusinessPage() {
     const { id } = useLocalSearchParams()
 
-    const [businessPromise] = useState(
-        api
-            .get<BusinessType>("business/" + id)
-            .then(res => res.data)
-            .catch(error => {
-                console.error(error)
-                return null
-            })
+    const businessPromise = useMemo(
+        () =>
+            api
+                .get<BusinessType>("business/" + id)
+                .then(res => res.data)
+                .catch(error => {
+                    console.error(error)
+                    return null
+                }),
+        [id]
     )
 
     return (

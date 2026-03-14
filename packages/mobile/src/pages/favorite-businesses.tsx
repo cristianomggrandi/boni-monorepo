@@ -1,16 +1,19 @@
+import { Suspense } from "react"
 import { ScrollView } from "react-native"
 import BusinessList from "../components/lists/business-list"
+import SkeletonCardList from "../components/lists/skeleton-card-list"
 import PageContainer from "../components/page-container"
 import useFavoritesStore from "../stores/favorites-store"
 
 export default function FavoriteBusinessesPage() {
-    const favoriteBusinesses = useFavoritesStore(state => state.getFavoriteBusinesses())
-    const isLoadingFavorites = useFavoritesStore(state => state.isLoadingFavorites)
+    const getFavoriteBusinesses = useFavoritesStore(state => state.getFavoriteBusinesses)()
 
     return (
         <PageContainer className="">
             <ScrollView>
-                <BusinessList list={favoriteBusinesses} isCompact />
+                <Suspense fallback={<SkeletonCardList />}>
+                    <BusinessList list={getFavoriteBusinesses} isCompact />
+                </Suspense>
             </ScrollView>
         </PageContainer>
     )

@@ -37,52 +37,6 @@ async function getNextAppointment(): Promise<Appointment | null> {
     }
 }
 
-function NextAppointmentCard({ nextAppointment }: { nextAppointment: Appointment | null }) {
-    if (!nextAppointment)
-        return (
-            <View className="m-2 w-auto">
-                <StyledSkeleton height={96} width={"100%"} />
-            </View>
-        )
-
-    const [day, month, time] = formatDate(nextAppointment.date.toString())
-
-    return (
-        <View className="rounded-2xl bg-white elevation p-4 justify-center gap-2">
-            <View className="flex-row gap-6 p-2">
-                <View className="bg-gray-200 rounded-2xl aspect-square items-center justify-center">
-                    <StyledText className="uppercase text-sm font-semibold text-gray-500 px-1">
-                        {month}
-                    </StyledText>
-                    <StyledText className="text-2xl font-jakarta-bold">{day}</StyledText>
-                </View>
-                <View className="flex-col flex-1">
-                    <StyledText className="text-lg font-jakarta-bold">
-                        {nextAppointment.services[0].name}
-                    </StyledText>
-                    <StyledText className="text-sm">
-                        {time} · {nextAppointment.worker.user.name}
-                    </StyledText>
-                    <View className="flex-row mt-2">
-                        <StyledText className="font-semibold uppercase text-3xl/3 text-secondary">
-                            ·
-                        </StyledText>
-                        <StyledText className="font-semibold text-sm uppercase px-1">
-                            Confirmado
-                        </StyledText>
-                    </View>
-                </View>
-                <View className="justify-center">
-                    <StyledIcon className="bg-secondary">
-                        {/* <Feather name="map" size={24} color="black" /> */}
-                        <FontAwesome name="map" size={24} color="black" />
-                    </StyledIcon>
-                </View>
-            </View>
-        </View>
-    )
-}
-
 export default function NextAppointment() {
     const router = useRouter()
 

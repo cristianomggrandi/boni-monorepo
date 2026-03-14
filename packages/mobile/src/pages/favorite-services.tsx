@@ -1,16 +1,26 @@
+import { Service } from "@boni/database/dist/generated/prisma/client"
+import { Suspense, use } from "react"
 import { ScrollView } from "react-native"
 import ServiceList from "../components/lists/service-list"
+import SkeletonCardList from "../components/lists/skeleton-card-list"
 import PageContainer from "../components/page-container"
 import useFavoritesStore from "../stores/favorites-store"
 
+function Services({ favoriteServicesPromise }: { favoriteServicesPromise: Promise<Service[]> }) {
+    const favoriteServices = use(favoriteServicesPromise)
+
+    return <ServiceList list={favoriteServices} isCompact />
+}
+
 export default function FavoriteServicesPage() {
-    const favoriteServices = useFavoritesStore(state => state.getFavoriteServices())
-    const isLoadingFavorites = useFavoritesStore(state => state.isLoadingFavorites)
+    const getFavoriteServices = useFavoritesStore(state => state.getFavoriteServices)()
 
     return (
         <PageContainer className="">
             <ScrollView>
-                <ServiceList list={favoriteServices} isLoading={isLoadingFavorites} isCompact />
+                <Suspense fallback={<SkeletonCardList />}>
+                    <Services favoriteServicesPromise={getFavoriteServices} />
+                </Suspense>
             </ScrollView>
         </PageContainer>
     )

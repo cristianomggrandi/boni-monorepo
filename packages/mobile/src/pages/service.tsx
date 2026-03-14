@@ -4,10 +4,11 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6"
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons"
 import { Image } from "expo-image"
 import { useLocalSearchParams, useNavigation } from "expo-router"
-import { useEffect, useLayoutEffect, useState } from "react"
+import { Suspense, use, useEffect, useLayoutEffect, useMemo, useState } from "react"
 import { Pressable, ScrollView, View } from "react-native"
 import api from "../api/boni-api"
 import FavoriteIcon from "../components/favorite-icon"
+import LoadingSpinner from "../components/loading-spinner"
 import PageContainer from "../components/page-container"
 import StyledText from "../components/styled/styled-text"
 import useFavoritesStore from "../stores/favorites-store"
@@ -18,24 +19,19 @@ type ServiceType = Prisma.ServiceGetPayload<{
 }>
 
 function ServicePageFavoriteIcon({ service }: { service: ServiceType }) {
-    const favoriteServiceIds = useFavoritesStore(state => state.getFavoriteServiceIds())
+    const getFavoriteServiceIds = useFavoritesStore(state => state.getFavoriteServiceIds)
     const addFavoriteService = useFavoritesStore(state => state.addFavoriteService)
     const removeFavoriteService = useFavoritesStore(state => state.removeFavoriteService)
 
-    const [isFavorite, setIsFavorite] = useState(favoriteServiceIds.includes(Number(service.id)))
+    const [isFavorite, setIsFavorite] = useState(false)
 
     const handleFavoriteToggle = async () => {
         const newIsFavorite = !isFavorite
         setIsFavorite(newIsFavorite)
 
         try {
-            if (newIsFavorite) {
-                await api.post("/favorite-services/" + service.id)
-                addFavoriteService(service)
-            } else {
-                await api.delete("/favorite-services/" + service.id)
-                removeFavoriteService(service)
-            }
+            if (newIsFavorite) addFavoriteService(service)
+            else removeFavoriteService(service)
         } catch (error) {
             console.error("Failed to toggle favorite:", error)
             setIsFavorite(!newIsFavorite)
@@ -43,26 +39,18 @@ function ServicePageFavoriteIcon({ service }: { service: ServiceType }) {
     }
 
     useEffect(() => {
-        setIsFavorite(favoriteServiceIds.includes(Number(service.id)))
-    }, [favoriteServiceIds])
+        getFavoriteServiceIds().then(favoriteServiceIds =>
+            setIsFavorite(favoriteServiceIds.includes(Number(service.id)))
+        )
+    }, [getFavoriteServiceIds])
 
     return <FavoriteIcon isFavorite={isFavorite} handleFavoriteToggle={handleFavoriteToggle} />
 }
 
-export default function ServicePage() {
-    const { id } = useLocalSearchParams()
+function Service({ servicePromise }: { servicePromise: Promise<ServiceType | null> }) {
     const navigation = useNavigation()
 
-    const [service, setService] = useState<ServiceType>()
-
-    useEffect(() => {
-        api.get("service/" + id)
-            .then(res => {
-                console.log("BUSINESS:", res.data)
-                setService(res.data)
-            })
-            .catch(error => console.error(error))
-    }, [])
+    const service = use(servicePromise)
 
     useLayoutEffect(() => {
         if (service)
@@ -147,7 +135,6 @@ export default function ServicePage() {
                                     </View>
                                 ) : null}
                             </View>
-                            {/* TODO: Padronizar espaçamento com tela de business */}
                             <View className="border-b-hairline border-gray-300 mt-4 bg-background" />
                             <View>
                                 <StyledText className="font-semibold text-lg">Descrição</StyledText>
@@ -166,5 +153,27 @@ export default function ServicePage() {
                 </View>
             </View>
         </PageContainer>
+    )
+}
+
+export default function ServicePage() {
+    const { id } = useLocalSearchParams()
+
+    const servicePromise = useMemo(
+        () =>
+            api
+                .get<ServiceType>("service/" + id)
+                .then(res => res.data)
+                .catch(error => {
+                    console.error(error)
+                    return null
+                }),
+        [id]
+    )
+
+    return (
+        <Suspense fallback={<LoadingSpinner />}>
+            <Service servicePromise={servicePromise} />
+        </Suspense>
     )
 }

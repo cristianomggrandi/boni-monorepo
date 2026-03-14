@@ -21,6 +21,7 @@ import Animated, {
 import { SafeAreaView } from "react-native-safe-area-context"
 import HorizontalListSelector from "../components/horizontal-list-selector"
 import BusinessList from "../components/lists/business-list"
+import SkeletonCardList from "../components/lists/skeleton-card-list"
 import PageContainer from "../components/page-container"
 import { RouterBackButton } from "../components/page-header"
 import SearchBar from "../components/search-bar"
@@ -188,29 +189,7 @@ export default function SearchPage() {
                 >
                     <BusinessCategoryList getCategoriesPromise={getCategoriesPromise} />
                 </Suspense>
-                <Suspense
-                    fallback={
-                        <View>
-                            <View className="gap-4 p-2 mt-2">
-                                <View className="flex-row items-center justify-between">
-                                    <StyledSkeleton height={40} width={"80%"} />
-                                    <StyledSkeleton height={48} width={48} radius={"round"} />
-                                </View>
-                            </View>
-                            <ScrollView
-                                showsVerticalScrollIndicator={false}
-                                contentContainerClassName="pt-2 pb-4 px-2 gap-2"
-                            >
-                                <StyledSkeleton width={"100%"} height={108} radius={12} />
-                                <StyledSkeleton width={"100%"} height={108} radius={12} />
-                                <StyledSkeleton width={"100%"} height={108} radius={12} />
-                                <StyledSkeleton width={"100%"} height={108} radius={12} />
-                                <StyledSkeleton width={"100%"} height={108} radius={12} />
-                                <StyledSkeleton width={"100%"} height={108} radius={12} />
-                            </ScrollView>
-                        </View>
-                    }
-                >
+                <Suspense fallback={<SkeletonCardList />}>
                     <BusinessList list={getBusinessPromise} />
                 </Suspense>
             </Animated.ScrollView>
